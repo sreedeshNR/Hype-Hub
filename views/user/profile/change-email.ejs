@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title><%= title %> - HypeHub</title>
+  <link rel="stylesheet" href="/css/profile.css"/>
+</head>
+<body>
+  <div class="profile-container">
+    <%- include('../partials/sidebar') %>
+
+    <div class="profile-main">
+      <h2 class="page-title">Change Email</h2>
+      <p class="page-subtitle">Update your email address with OTP verification.</p>
+
+      <div class="password-form-wrap">
+
+        <!-- Current Email -->
+        <div class="form-group" style="margin-bottom: 20px;">
+          <label>CURRENT EMAIL</label>
+          <input type="email" value="<%= user.email %>" disabled/>
+        </div>
+
+        <% if (typeof errors !== 'undefined' && errors.general) { %>
+          <div class="error-msg"><%= errors.general %></div>
+        <% } %>
+
+        <form action="/profile/change-email" method="POST">
+          <div class="form-group">
+            <label>NEW EMAIL ADDRESS</label>
+            <input
+              type="email"
+              name="newEmail"
+              id="newEmail"
+              placeholder="eg: newemail@example.com"
+              autocomplete="off"
+            />
+            <% if (typeof errors !== 'undefined' && errors.newEmail) { %>
+              <span class="field-error"><%= errors.newEmail %></span>
+            <% } %>
+          </div>
+
+          <button type="submit" class="btn-primary">SEND OTP →</button>
+        </form>
+
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/loader.js"></script>
+  <script src="/js/main.js"></script>
+</body>
+</html>

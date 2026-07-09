@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dashboard - HypeHub Admin</title>
+  <link rel="stylesheet" href="/css/admin.css"/>
+</head>
+<body>
+
+  <div class="admin-container">
+
+    <%- include('partials/sidebar') %>
+
+    <div class="admin-main">
+      <h2 class="page-title">Dashboard</h2>
+      <p class="page-subtitle">Welcome back, <%= admin.fullName %>!</p>
+
+      <!-- Stats Cards -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <p class="stat-label">TOTAL USERS</p>
+          <h2 class="stat-value"><%= totalUsers %></h2>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="/js/loader.js"></script>
+</body>
+</html>

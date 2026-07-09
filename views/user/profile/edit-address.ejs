@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Edit Address - HypeHub</title>
+  <link rel="stylesheet" href="/css/profile.css"/>
+</head>
+<body>
+
+  <div class="profile-container">
+    <%- include('../partials/sidebar') %>
+
+    <div class="profile-main">
+      <div class="breadcrumb">Address → <span>Edit Address</span></div>
+      <h2 class="page-title">Edit Address</h2>
+      <p class="page-subtitle">Update your shipping destination.</p>
+
+     <% if (typeof errors !== 'undefined' && errors.general) { %>
+  <div class="error-msg"><%= errors.general %></div>
+    <% } %>
+
+      <div class="address-form-wrap">
+   <form action="/addresses/edit/<%= address._id %>" method="POST">
+
+  <p class="form-section-title">— PERSONAL DETAILS</p>
+  <div class="form-row">
+    <div class="form-group">
+      <input type="text" name="fullName" value="<%= address.fullName %>"/>
+      <% if (typeof errors !== 'undefined' && errors.fullName) { %>
+        <span class="field-error"><%= errors.fullName %></span>
+      <% } %>
+    </div>
+    <div class="form-group">
+      <input type="text" name="phone" value="<%= address.phone %>"/>
+      <% if (typeof errors !== 'undefined' && errors.phone) { %>
+        <span class="field-error"><%= errors.phone %></span>
+      <% } %>
+    </div>
+  </div>
+
+  <p class="form-section-title">— ADDRESS INFORMATION</p>
+  <div class="form-group">
+    <input type="text" name="addressLine" value="<%= address.addressLine %>"/>
+    <% if (typeof errors !== 'undefined' && errors.addressLine) { %>
+      <span class="field-error"><%= errors.addressLine %></span>
+    <% } %>
+  </div>
+
+  <div class="form-group">
+    <input type="text" name="landmark" value="<%= address.landmark || '' %>"/>
+  </div>
+
+  <div class="form-row three-col">
+    <div class="form-group">
+      <input type="text" name="city" value="<%= address.city %>"/>
+      <% if (typeof errors !== 'undefined' && errors.city) { %>
+        <span class="field-error"><%= errors.city %></span>
+      <% } %>
+    </div>
+    <div class="form-group">
+      <input type="text" name="state" value="<%= address.state %>"/>
+      <% if (typeof errors !== 'undefined' && errors.state) { %>
+        <span class="field-error"><%= errors.state %></span>
+      <% } %>
+    </div>
+    <div class="form-group">
+      <input type="number" name="pincode" value="<%= address.pincode %>"/>
+      <% if (typeof errors !== 'undefined' && errors.pincode) { %>
+        <span class="field-error"><%= errors.pincode %></span>
+      <% } %>
+    </div>
+  </div>
+
+  <p class="form-section-title">— SAVE AS</p>
+  <div class="type-selector">
+    <label class="type-option">
+      <input type="radio" name="addressType" value="HOME"
+        <%= address.addressType === 'HOME' ? 'checked' : '' %>/>
+      <span>🏠 HOME</span>
+    </label>
+    <label class="type-option">
+      <input type="radio" name="addressType" value="WORK"
+        <%= address.addressType === 'WORK' ? 'checked' : '' %>/>
+      <span>💼 WORK</span>
+    </label>
+    <label class="type-option">
+      <input type="radio" name="addressType" value="OTHER"
+        <%= address.addressType === 'OTHER' ? 'checked' : '' %>/>
+      <span>📍 OTHER</span>
+    </label>
+  </div>
+
+  <div class="default-check">
+    <input type="checkbox" name="isDefault" id="isDefault" value="true"
+      <%= address.isDefault ? 'checked' : '' %>/>
+    <label for="isDefault">Set as default address</label>
+  </div>
+
+  <div class="form-actions">
+    <a href="/addresses" class="btn-cancel">CANCEL</a>
+    <button type="submit" class="btn-primary">SAVE ADDRESS</button>
+  </div>
+
+</form>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/loader.js"></script>
+</body>
+</html>

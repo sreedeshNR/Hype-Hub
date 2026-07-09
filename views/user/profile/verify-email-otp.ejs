@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title><%= title %> - HypeHub</title>
+  <link rel="stylesheet" href="/css/profile.css"/>
+  <link rel="stylesheet" href="/css/auth.css">
+</head>
+<body>
+  <div class="profile-container">
+    <%- include('../partials/sidebar') %>
+
+    <div class="profile-main">
+      <h2 class="page-title">Verify New Email</h2>
+      <p class="page-subtitle">Enter the 6-digit code sent to your new email.</p>
+
+      <div class="password-form-wrap">
+
+        <% if (error) { %>
+          <div class="error-msg"><%= error %></div>
+        <% } %>
+
+        <form action="/profile/verify-email-otp" method="POST">
+          <div class="otp-inputs" style="justify-content: flex-start; margin-bottom: 20px;">
+            <input type="text" name="otp1" maxlength="1" class="otp-box"/>
+            <input type="text" name="otp2" maxlength="1" class="otp-box"/>
+            <input type="text" name="otp3" maxlength="1" class="otp-box"/>
+            <input type="text" name="otp4" maxlength="1" class="otp-box"/>
+            <input type="text" name="otp5" maxlength="1" class="otp-box"/>
+            <input type="text" name="otp6" maxlength="1" class="otp-box"/>
+          </div>
+
+          <button type="submit" class="btn-primary">VERIFY →</button>
+        </form>
+
+        <div class="otp-footer" style="margin-top: 16px;">
+          <a href="/profile/change-email">← Change Email</a>
+          <div>
+            <span id="timerText">Resend Code in <span id="timer">00:59</span></span>
+            <form action="/profile/resend-email-otp" method="POST" id="resendForm" style="display:inline;">
+              <button
+                type="submit"
+                id="resendBtn"
+                style="display:none;"
+                class="resend-btn"
+              >Resend OTP</button>
+            </form>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/loader.js"></script>
+  <script src="/js/main.js"></script>
+  <script>
+    // OTP auto jump
+    const boxes = document.querySelectorAll(".otp-box");
+    boxes.forEach((box, index) => {
+      box.addEventListener("input", () => {
+        if (box.value && index < boxes.length - 1) {
+          boxes[index + 1].focus();
+        }
+      });
+      box.addEventListener("keydown", (e) => {
+        if (e.key === "Backspace" && !box.value && index > 0) {
+          boxes[index - 1].focus();
+        }
+      });
+    });
+
+    const timerEl = document.getElementById("timer");
+    const timerText = document.getElementById("timerText");
+    const resendBtn = document.getElementById("resendBtn");
+    const storageKey = "emailOtpTimerExpiry";
+    const isOtpExpired = <%- JSON.stringify(isOtpExpired) %>;
+
+    if (isOtpExpired) {
+      sessionStorage.removeItem(storageKey);
+      timerText.style.display = "none";
+      resendBtn.style.display = "inline";
+    } else {
+      let expiryTime = sessionStorage.getItem(storageKey);
+
+      if (!expiryTime || Number(expiryTime) <= Date.now()) {
+        expiryTime = Date.now() + 60 * 1000;
+        sessionStorage.setItem(storageKey, expiryTime);
+      }
+
+      expiryTime = Number(expiryTime);
+
+      const countdown = setInterval(() => {
+        const remaining = Math.floor((expiryTime - Date.now()) / 1000);
+        if (remaining <= 0) {
+          clearInterval(countdown);
+          timerEl.textContent = "00:00";
+          timerText.style.display = "none";
+          resendBtn.style.display = "inline";
+          sessionStorage.removeItem(storageKey);
+        } else {
+          timerEl.textContent = `00:${remaining < 10 ? "0" + remaining : remaining}`;
+        }
+      }, 1000);
+    }
+
+    const resendForm = document.getElementById("resendForm");
+    if (resendForm) {
+      resendForm.addEventListener("submit", () => {
+        sessionStorage.removeItem(storageKey);
+      });
+    }
+  </script>
+</body>
+</html>

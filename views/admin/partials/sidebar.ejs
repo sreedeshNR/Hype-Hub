@@ -1,0 +1,19 @@
+<div class="admin-sidebar">
+
+  <div class="sidebar-brand">HYPEHUB</div>
+  <div class="sidebar-role">Admin Panel</div>
+
+  <nav class="admin-nav">
+    <a href="/admin/dashboard" 
+      class="nav-item <%= title === 'Dashboard' ? 'active' : '' %>">
+      📊 Dashboard
+    </a>
+    <a href="/admin/users" 
+      class="nav-item <%= title === 'User Management' ? 'active' : '' %>">
+      👥 Users
+    </a>
+  </nav>
+
+  <a href="/admin/logout" class="sidebar-logout">↪ Logout</a>
+
+</div>

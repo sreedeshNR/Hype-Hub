@@ -1,0 +1,23 @@
+<nav class="navbar">
+  <div class="nav-brand">
+    <a href="/">HypeHub</a>
+  </div>
+
+  <div class="nav-links">
+    <a href="#">Market</a>
+    <a href="#">Editorial</a>
+    <a href="#">About Us</a>
+    <a href="#">Contact Us</a>
+  </div>
+
+  <div class="nav-actions">
+    <% if (user) { %>
+      <a href="/profile" class="nav-icon" title="Profile">👤</a>
+      <a href="/cart" class="nav-icon" title="Cart">🛒</a>
+      <a href="/logout" class="btn-nav-login">Logout</a>
+    <% } else { %>
+      <a href="/login" class="btn-nav-login">Login</a>
+      <a href="/register" class="btn-nav-register">Register</a>
+    <% } %>
+  </div>
+</nav>

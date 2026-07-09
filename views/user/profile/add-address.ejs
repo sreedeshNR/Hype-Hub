@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Add Address - HypeHub</title>
+  <link rel="stylesheet" href="/css/profile.css"/>
+</head>
+<body>
+
+  <div class="profile-container">
+    <%- include('../partials/sidebar') %>
+
+    <div class="profile-main">
+      <div class="breadcrumb">Address → <span>New Address</span></div>
+      <h2 class="page-title">Add New Address</h2>
+      <p class="page-subtitle">Secure your shipping destinations for faster checkout.</p>
+
+    <% if (typeof errors !== 'undefined' && errors.general) { %>
+  <div class="error-msg"><%= errors.general %></div>
+    <% } %>
+
+      <div class="address-form-wrap">
+  <form action="/addresses/add" method="POST">
+
+  <p class="form-section-title">— PERSONAL DETAILS</p>
+  <div class="form-row">
+    <div class="form-group">
+      <input type="text" name="fullName"
+        value="<%= typeof formData !== 'undefined' ? formData.fullName || '' : '' %>"
+        placeholder="Full Name"/>
+      <% if (typeof errors !== 'undefined' && errors.fullName) { %>
+        <span class="field-error"><%= errors.fullName %></span>
+      <% } %>
+    </div>
+    <div class="form-group">
+      <input type="text" name="phone"
+        value="<%= typeof formData !== 'undefined' ? formData.phone || '' : '' %>"
+        placeholder="Phone Number"/>
+      <% if (typeof errors !== 'undefined' && errors.phone) { %>
+        <span class="field-error"><%= errors.phone %></span>
+      <% } %>
+    </div>
+  </div>
+
+  <p class="form-section-title">— ADDRESS INFORMATION</p>
+  <div class="form-group">
+    <input type="text" name="addressLine"
+      value="<%= typeof formData !== 'undefined' ? formData.addressLine || '' : '' %>"
+      placeholder="Address Line - Flat, House no., Building"/>
+    <% if (typeof errors !== 'undefined' && errors.addressLine) { %>
+      <span class="field-error"><%= errors.addressLine %></span>
+    <% } %>
+  </div>
+
+  <div class="form-group">
+    <input type="text" name="landmark"
+      value="<%= typeof formData !== 'undefined' ? formData.landmark || '' : '' %>"
+      placeholder="Landmark (Optional)"/>
+  </div>
+
+  <div class="form-row three-col">
+    <div class="form-group">
+      <input type="text" name="city"
+        value="<%= typeof formData !== 'undefined' ? formData.city || '' : '' %>"
+        placeholder="City"/>
+      <% if (typeof errors !== 'undefined' && errors.city) { %>
+        <span class="field-error"><%= errors.city %></span>
+      <% } %>
+    </div>
+    <div class="form-group">
+      <input type="text" name="state"
+        value="<%= typeof formData !== 'undefined' ? formData.state || '' : '' %>"
+        placeholder="State"/>
+      <% if (typeof errors !== 'undefined' && errors.state) { %>
+        <span class="field-error"><%= errors.state %></span>
+      <% } %>
+    </div>
+    <div class="form-group">
+      <input type="number" name="pincode"
+        value="<%= typeof formData !== 'undefined' ? formData.pincode || '' : '' %>"
+        placeholder="Pincode"/>
+      <% if (typeof errors !== 'undefined' && errors.pincode) { %>
+        <span class="field-error"><%= errors.pincode %></span>
+      <% } %>
+    </div>
+  </div>
+
+  <p class="form-section-title">— SAVE AS</p>
+  <div class="type-selector">
+    <label class="type-option">
+      <input type="radio" name="addressType" value="HOME" checked/>
+      <span>🏠 HOME</span>
+    </label>
+    <label class="type-option">
+      <input type="radio" name="addressType" value="WORK"/>
+      <span>💼 WORK</span>
+    </label>
+    <label class="type-option">
+      <input type="radio" name="addressType" value="OTHER"/>
+      <span>📍 OTHER</span>
+    </label>
+  </div>
+
+  <div class="default-check">
+    <input type="checkbox" name="isDefault" id="isDefault" value="true"/>
+    <label for="isDefault">Set as default address</label>
+  </div>
+
+  <div class="form-actions">
+    <a href="/addresses" class="btn-cancel">CANCEL</a>
+    <button type="submit" class="btn-primary">SAVE ADDRESS</button>
+  </div>
+
+</form>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/loader.js"></script>
+</body>
+</html>

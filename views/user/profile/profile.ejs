@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title><%= title %> - HypeHub</title>
+  <link rel="stylesheet" href="/css/profile.css" />
+</head>
+<body>
+
+  <div class="profile-container">
+
+    <!-- Sidebar -->
+    <%- include('../partials/sidebar') %>
+
+    <!-- Main Content -->
+    <div class="profile-main">
+
+      <!-- Top -->
+      <div class="profile-top">
+        <div class="profile-avatar">
+          <img 
+            src="<%= user.profileImage || '/images/default-avatar.svg' %>" 
+            alt="Avatar" 
+          />
+        </div>
+        <div class="profile-top-info">
+          <h1><%= user.fullName %></h1>
+          <p>📅 Joined <%= user.createdAt.toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) %></p>
+        </div>
+        <a href="/profile/edit" class="btn-primary">EDIT PROFILE</a>
+      </div>
+
+      <% if (success) { %>
+  <div class="success-msg" id="successMsg"><%= success %></div>
+      <% } %>
+
+      <!-- Info Cards -->
+      <div class="profile-cards">
+
+        <!-- Personal Information -->
+        <div class="info-card">
+          <h3>👤 Personal Information</h3>
+          <div class="info-grid">
+            <div class="info-field">
+              <label>FULL NAME</label>
+              <div class="info-value"><%= user.fullName %></div>
+            </div>
+            <div class="info-field">
+              <label>EMAIL ADDRESS</label>
+              <div class="info-value"><%= user.email %></div>
+            </div>
+            <div class="info-field">
+              <label>PHONE NUMBER</label>
+              <div class="info-value"><%= user.phone || 'Not added' %></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Account Details -->
+        <div class="info-card">
+          <h3>🔒 Account Details</h3>
+          <div class="account-detail">
+            <span class="detail-label">Username</span>
+            <span class="detail-value">@<%= user.username %></span>
+          </div>
+          <div class="account-detail">
+            <span class="detail-label">Member Since</span>
+            <span class="detail-value">
+              <%= user.createdAt.toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) %>
+            </span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script>
+  const msg = document.getElementById("successMsg");
+  if (msg) {
+    setTimeout(() => {
+      msg.style.transition = "opacity 0.5s";
+      msg.style.opacity = "0";
+      setTimeout(() => msg.remove(), 500);
+    }, 3000);
+  }
+</script>
+
+
+<script src="/js/loader.js"></script>
+</body>
+</html>

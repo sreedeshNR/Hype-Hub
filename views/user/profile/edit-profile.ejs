@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title><%= title %> - HypeHub</title>
+  <link rel="stylesheet" href="/css/profile.css" />
+</head>
+<body>
+
+  <div class="profile-container">
+
+    <%- include('../partials/sidebar') %>
+
+    <div class="profile-main">
+      <h2 class="page-title">Edit Profile</h2>
+      <p class="page-subtitle">Customize your identity.</p>
+
+      <% if (typeof errors !== 'undefined' && errors.general) { %>
+        <div class="error-msg"><%= errors.general %></div>
+      <% } %>
+      <% if (success) { %>
+        <div class="success-msg" id="successMsg"><%= success %></div>
+      <% } %>
+
+      <div class="edit-container">
+
+        <!-- Form Section - moved enctype here -->
+        <form action="/profile/edit" method="POST" enctype="multipart/form-data">
+
+          <!-- Avatar Section -->
+          <div class="avatar-section">
+            <div class="avatar-wrap">
+              <img
+                src="<%= user.profileImage || '/images/default-avatar.svg' %>"
+                alt="Avatar"
+                id="avatarPreview"
+              />
+              <label for="profileImage" class="avatar-upload-btn">📷</label>
+              <input
+                type="file"
+                name="profileImage"
+                id="profileImage"
+                accept="image/*"
+                style="display:none;"
+                onchange="previewAvatar(this)"
+              />
+            </div>
+            <p class="avatar-username">@<%= user.username %></p>
+            <span class="avatar-badge">SNEAKER PRO</span>
+            <p class="avatar-since">Member since <%= user.createdAt.getFullYear() %></p>
+          </div>
+
+          <!-- Form Section -->
+          <div class="form-section">
+            <h3>👤 Personal Information</h3>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label>FULL NAME</label>
+                <input type="text" name="fullName" value="<%= user.fullName %>"/>
+                <% if (typeof errors !== 'undefined' && errors.fullName) { %>
+                  <span class="field-error"><%= errors.fullName %></span>
+                <% } %>
+              </div>
+              <div class="form-group">
+                <label>USERNAME</label>
+                <input type="text" name="username" value="<%= user.username %>"/>
+                <% if (typeof errors !== 'undefined' && errors.username) { %>
+                  <span class="field-error"><%= errors.username %></span>
+                <% } %>
+              </div>
+            </div>
+
+            <div class="form-row">
+           <div class="form-group">
+             <label>EMAIL ADDRESS</label>
+                <input type="email" value="<%= user.email %>" disabled/>
+                    <a href="/profile/change-email" style="font-size: 11px; color: #ff6b35; margin-top: 4px; display: inline-block;">
+                     Change Email →
+                       </a>
+                    </div>
+              <div class="form-group">
+                <label>PHONE NUMBER</label>
+                <input type="text" name="phone" value="<%= user.phone || '' %>"
+                  placeholder="10-digit phone number"/>
+                <% if (typeof errors !== 'undefined' && errors.phone) { %>
+                  <span class="field-error"><%= errors.phone %></span>
+                <% } %>
+              </div>
+            </div>
+
+            <div class="form-actions">
+              <a href="/profile" class="btn-cancel">Cancel</a>
+              <button type="submit" class="btn-primary">SAVE CHANGES</button>
+            </div>
+
+          </div>
+
+        </form>
+
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/loader.js"></script>
+  <script src="/js/main.js"></script>
+  <script>
+    // Avatar preview
+    function previewAvatar(input) {
+      if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          document.getElementById("avatarPreview").src = e.target.result;
+        };
+        reader.readAsDataURL(input.files[0]);
+      }
+    }
+
+    // Auto hide success
+    const msg = document.getElementById("successMsg");
+    if (msg) {
+      setTimeout(() => {
+        msg.style.transition = "opacity 0.5s";
+        msg.style.opacity = "0";
+        setTimeout(() => msg.remove(), 500);
+      }, 3000);
+    }
+  </script>
+</body>
+</html>

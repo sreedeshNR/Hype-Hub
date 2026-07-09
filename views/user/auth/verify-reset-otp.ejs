@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Verify OTP - HypeHub</title>
+  <link rel="stylesheet" href="/css/auth.css" />
+</head>
+<body>
+
+  <div class="auth-container">
+
+    <!-- Left Side -->
+    <div class="auth-left">
+      <div class="auth-left-content">
+        <h1>OWN THE <br/><span>CULTURE.</span></h1>
+        <p>Verify your identity to reset your password.</p>
+      </div>
+    </div>
+
+    <!-- Right Side -->
+    <div class="auth-right">
+      <div class="auth-box">
+
+        <div class="otp-icon">🛡️</div>
+        <h2>Verify Access</h2>
+        <p class="subtitle">
+          We've sent a 6-digit code to your email. 
+          Enter it below to continue.
+        </p>
+
+        <% if (error) { %>
+          <div class="error-msg"><%= error %></div>
+        <% } %>
+
+        <form action="/verify-reset-otp" method="POST">
+          <div class="otp-inputs">
+            <input type="text" name="otp1" maxlength="1" class="otp-box" required />
+            <input type="text" name="otp2" maxlength="1" class="otp-box" required />
+            <input type="text" name="otp3" maxlength="1" class="otp-box" required />
+            <input type="text" name="otp4" maxlength="1" class="otp-box" required />
+            <input type="text" name="otp5" maxlength="1" class="otp-box" required />
+            <input type="text" name="otp6" maxlength="1" class="otp-box" required />
+          </div>
+
+          <button type="submit" class="btn-primary">VERIFY →</button>
+        </form>
+
+        <div class="otp-footer">
+          <a href="/login">← Back to Login</a>
+          <div>
+            <span id="timerText">Resend Code in <span id="timer">00:59</span></span>
+            <form action="/forgot-password" method="POST" style="display:inline;">
+              <input type="hidden" name="email" value=""/>
+              <button type="submit" id="resendBtn" style="display:none;" class="resend-btn">
+                Resend OTP
+              </button>
+            </form>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+<script>
+  const boxes = document.querySelectorAll(".otp-box")
+  boxes.forEach((box, index)=>{
+    box.addEventListener("input",()=>{
+      if(box.value && index < boxes.length - 1){
+        boxes[index + 1].focus();
+      }
+    })
+    box.addEventListener("keydown",(e)=>{
+      if(e.key === "Backspace" && !box.value && index > 0){
+        boxes[index - 1].focus()
+      }
+    });
+  });
+
+  const timerEl = document.getElementById("timer")
+  const timerText = document.getElementById("timerText")
+  const resendBtn = document.getElementById("resendBtn")
+
+  const storageKey = "resendOtpTimerExpiry";
+  let expiryTime = sessionStorage.getItem(storageKey)
+
+  if(!expiryTime){
+    expiryTime = Date.now() + 60 * 1000
+    sessionStorage.setItem(storageKey,expiryTime)
+  }
+
+  expiryTime = Number(expiryTime)
+
+  const countdown = setInterval(()=>{
+    const remaining = Math.floor((expiryTime - Date.now()) / 1000)
+
+    if(remaining <= 0){
+      clearInterval(countdown)
+      timerEl.textContent = "00:00"
+      timerText.style.display = "none"
+      resendBtn.style.display = "inline"
+      sessionStorage.removeItem(storageKey)
+    }else{
+      timerEl.textContent = `00:${remaining < 10 ? "0" + remaining : remaining}`
+    }
+  },1000)
+
+  const resendForm = document.getElementById("resendForm")
+  if(resendForm){
+    resendForm.addEventListener("submit",()=>{
+      sessionStorage.removeItem(storageKey)
+    });
+  }
+</script>
+
+<script src="/js/loader.js"></script>
+</body>
+</html>

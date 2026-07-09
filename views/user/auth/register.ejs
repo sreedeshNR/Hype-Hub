@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
+  <meta http-equiv="Pragma" content="no-cache"/>
+  <meta http-equiv="Expires" content="0"/>
+  <title>Register - HypeHub</title>
+  <link rel="stylesheet" href="/css/auth.css" />
+</head>
+<body>
+
+  <div class="auth-container">
+
+    <!-- Left Side -->
+    <div class="auth-left">
+      <div class="auth-left-content">
+        <span class="badge">NEW ERA DROPS</span>
+        <h1>OWN THE <br/><span>CULTURE.</span></h1>
+        <p>Create your account for early access to drops and exclusive marketplace data.</p>
+      </div>
+    </div>
+
+    <!-- Right Side -->
+    <div class="auth-right">
+  <div class="auth-box">
+  <h2>JOIN THE CULTURE.</h2>
+  <p class="subtitle">Create your account to get started.</p>
+
+  <% if (typeof errors !== 'undefined' && errors.general) { %>
+    <div class="error-msg"><%= errors.general %></div>
+  <% } %>
+
+  <a href="/auth/google" class="google-btn">
+    <img src="/images/icons/google-icon.png" alt="Google" width="20"/>
+    Continue with Google
+  </a>
+
+  <div class="divider">OR WITH EMAIL</div>
+
+  <form action="/register" method="POST" id="registerForm" autocomplete="off">
+
+    <div class="form-group">
+  <label>FULL NAME</label>
+  <input type="text" name="fullName" id="fullName"
+    value="<%= typeof formData !== 'undefined' ? formData.fullName || '' : '' %>"
+    placeholder="eg: John Doe"/>
+  <% if (typeof errors !== 'undefined' && errors.fullName) { %>
+    <span class="field-error"><%= errors.fullName %></span>
+  <% } %>
+</div>
+
+<div class="form-group">
+  <label>USERNAME</label>
+  <input type="text" name="username" id="userName"
+    value="<%= typeof formData !== 'undefined' ? formData.username || '' : '' %>"
+    placeholder="eg: john_doe"/>
+  <% if (typeof errors !== 'undefined' && errors.username) { %>
+    <span class="field-error"><%= errors.username %></span>
+  <% } %>
+</div>
+
+<div class="form-group">
+  <label>EMAIL</label>
+<input
+  type="email"
+  name="email"
+  id="email"
+  autocomplete="email"
+  placeholder="john@gmail.com"
+  value="<%= typeof formData !== 'undefined' ? formData.email || '' : '' %>"/>
+  <% if (typeof errors !== 'undefined' && errors.email) { %>
+    <span class="field-error"><%= errors.email %></span>
+  <% } %>
+</div>
+
+<div class="form-group">
+  <label>PHONE NUMBER</label>
+  <input type="text" name="phone" id="phone"
+    value="<%= typeof formData !== 'undefined' ? formData.phone || '' : '' %>"
+    placeholder="eg: 9876543210"/>
+  <% if (typeof errors !== 'undefined' && errors.phone) { %>
+    <span class="field-error"><%= errors.phone %></span>
+  <% } %>
+</div>
+
+<div class="form-group">
+  <label>PASSWORD</label>
+  <div class="input-icon">
+<input
+  type="password"
+  name="password"
+  id="password"
+  autocomplete="new-password"
+  placeholder="John@1234"/>
+<span class="eye-icon" id="password-icon" onclick="togglePassword('password')" style="pointer-events:all; cursor:pointer;">
+  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="pointer-events:none;">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+  </svg>
+</span>
+  </div>
+  <% if (typeof errors !== 'undefined' && errors.password) { %>
+    <span class="field-error"><%= errors.password %></span>
+  <% } %>
+</div>
+
+    <button type="submit" class="btn-primary">CREATE ACCOUNT</button>
+
+  </form>
+
+  <p class="redirect-text">
+    Already have an account? <a href="/login">Sign In</a>
+  </p>
+</div>
+    </div>
+
+  </div>
+
+<script>
+  // If page was reloaded, redirect to fresh register page
+  if (window.performance) {
+    const navType = performance.getEntriesByType("navigation")[0]?.type;
+    if (navType === "reload") {
+      window.location.replace("/register");
+    }
+  }
+</script>
+<script src="/js/loader.js"></script>
+<script src="/js/main.js"></script>
+</body>
+</html>

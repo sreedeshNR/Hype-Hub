@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <title>Server Error - HypeHub</title>
+  <link rel="stylesheet" href="/css/auth.css"/>
+  <style>
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background: #0f0f0f;
+    }
+    .error-box {
+      text-align: center;
+      padding: 40px;
+      background: #1a1a1a;
+      border: 1px solid #333;
+      border-radius: 12px;
+    }
+    .error-code {
+      font-size: 80px;
+      font-weight: 900;
+      color: #ff6b35;
+    }
+    .error-box h2 { margin: 10px 0; }
+    .error-box p { color: #aaa; font-size: 13px; margin-bottom: 20px; }
+    .error-box a {
+      padding: 12px 24px;
+      background: #ff6b35;
+      color: #fff;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 700;
+    }
+  </style>
+</head>
+<body>
+  <div class="error-box">
+    <div class="error-code">500</div>
+    <h2>Server Error</h2>
+    <p><%= error %></p>
+    <a href="/">Go Home</a>
+  </div>
+
+  <script src="/js/loader.js"></script>
+</body>
+</html>

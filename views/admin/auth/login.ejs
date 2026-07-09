@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Login - HypeHub</title>
+  <link rel="stylesheet" href="/css/admin.css"/>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
+<meta http-equiv="Pragma" content="no-cache"/>
+<meta http-equiv="Expires" content="0"/>
+</head>
+<body>
+
+  <div class="admin-login-container">
+    <div class="admin-login-box">
+
+      <div class="admin-brand">HYPEHUB</div>
+      <p class="admin-brand-sub">Admin Panel</p>
+
+      <h2>Welcome Back</h2>
+      <p class="subtitle">Sign in to access the admin dashboard.</p>
+
+      <% if (error) { %>
+        <div class="error-msg"><%= error %></div>
+      <% } %>
+
+      <form action="/admin/login" method="POST" id="loginForm">
+
+          <input type="text" style="display:none;" name="fakeEmail"/>
+          <input type="password" style="display:none;" name="fakePassword"/>
+
+        <div class="form-group">
+          <label>EMAIL</label>
+          <input
+            type="text"
+            name="email"
+            id="adminEmail"
+            autocomplete="email"
+            placeholder="admin@hypehub.com"
+          />
+        </div>
+
+      <div class="form-group">
+        <label>PASSWORD</label>
+        <div class="input-icon" style="position: relative;">
+          <input
+            type="password"
+            name="password"
+            id="adminPassword"
+            autocomplete="new-password"
+            placeholder="••••••••"
+            style="padding-right: 40px;"
+          />
+          <span class="eye-icon" id="adminPassword-icon"
+            onclick="togglePassword('adminPassword')"
+            style="pointer-events:all; cursor:pointer;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="pointer-events:none;">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+            </svg>
+          </span>
+        </div>
+      </div>
+
+        <button type="submit" class="btn-primary">LOGIN →</button>
+
+      </form>
+
+    </div>
+  </div>
+
+<script src="/js/loader.js"></script>
+<script src="/js/main.js"></script>
+<script>
+  setTimeout(() => {
+    const email = document.getElementById("adminEmail");
+    const password = document.getElementById("adminPassword");
+    if (email) email.value = "";
+    if (password) password.value = "";
+  }, 100);
+</script>
+</body>
+</html>
