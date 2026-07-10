@@ -26,7 +26,7 @@
         </div>
         <div class="profile-top-info">
           <h1><%= user.fullName %></h1>
-          <p>📅 Joined <%= user.createdAt.toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) %></p>
+          <p><img src="/images/icons/calender.png" alt=""> Joined <%= user.createdAt.toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) %></p>
         </div>
         <a href="/profile/edit" class="btn-primary">EDIT PROFILE</a>
       </div>
@@ -40,7 +40,7 @@
 
         <!-- Personal Information -->
         <div class="info-card">
-          <h3>👤 Personal Information</h3>
+          <h3> <img src="/images/icons/profile.png"> Personal Information</h3>
           <div class="info-grid">
             <div class="info-field">
               <label>FULL NAME</label>
@@ -59,7 +59,7 @@
 
         <!-- Account Details -->
         <div class="info-card">
-          <h3>🔒 Account Details</h3>
+          <h3> <img src="/images/icons/lock.png" alt=""> Account Details</h3>
           <div class="account-detail">
             <span class="detail-label">Username</span>
             <span class="detail-value">@<%= user.username %></span>

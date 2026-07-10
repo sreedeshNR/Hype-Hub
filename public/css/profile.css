@@ -210,14 +210,6 @@ body {
   text-align: center;
 }
 
-.avatar-wrap img {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 3px solid #ff6b35;
-}
-
 .avatar-username {
   color: #aaaaaa;
   font-size: 13px;
@@ -528,7 +520,7 @@ body {
 /* Type Selector */
 .type-selector {
   display: flex;
-  gap: 12px;
+  gap: 10px;
   margin-bottom: 16px;
 }
 
@@ -537,15 +529,23 @@ body {
 }
 
 .type-option span {
-  display: block;
-  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
   background-color: #111;
   border: 1px solid #333;
-  border-radius: 8px;
-  font-size: 12px;
-  letter-spacing: 1px;
+  border-radius: 6px;
+  font-size: 11px;
+  letter-spacing: 0.5px;
   cursor: pointer;
   transition: all 0.2s;
+}
+
+.type-option svg,
+.type-option img {
+  width: 14px;
+  height: 14px;
 }
 
 .type-option input[type="radio"]:checked + span {
@@ -687,12 +687,19 @@ body {
   font-size: 12px;
   cursor: pointer;
   border: 2px solid #0f0f0f;
+  overflow: hidden;
+}
+
+.avatar-upload-btn img {
+  width: 14px;
+  height: 14px;
+  object-fit: contain;
+  filter: brightness(0) invert(1);
 }
 
 .avatar-upload-btn:hover {
   background-color: #e55a25;
 }
-
 
 .nav-item svg {
   flex-shrink: 0;

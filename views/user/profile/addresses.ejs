@@ -42,7 +42,7 @@
                   <span class="default-badge">PRIMARY</span>
                 <% } %>
                 <div class="address-actions">
-                  <a href="/addresses/edit/<%= address._id %>">✏️</a>
+                  <a href="/addresses/edit/<%= address._id %>"><img src="/images/icons/pencil.png" alt=""></a>
                   <form action="/addresses/delete/<%= address._id %>"
                     method="POST"
                     id="delete-<%= address._id %>">
@@ -55,7 +55,9 @@
                         onConfirm: () => document.getElementById('delete-<%= address._id %>').submit(),
                         onCancel: ()=> {},
                       })
-                    ">🗑️</button>
+                    ">
+                    <img src="/images/icons/trash.png" alt="">  
+                  </button>
                   </form>
                 </div>
               </div>
