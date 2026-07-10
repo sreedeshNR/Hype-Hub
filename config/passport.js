@@ -19,6 +19,11 @@ passport.use(
           if (user.isBlocked) {
             return done(null, false, { message: "blocked" });
           }
+
+            if (!user.googleId) {
+                await User.findByIdAndUpdate(user._id, { googleId: profile.id });
+                user.googleId = profile.id;
+          }
            return done(null, user);
         }
 
@@ -28,9 +33,11 @@ passport.use(
           email: profile.emails[0].value,
           username: profile.emails[0].value.split("@")[0] + Math.floor(Math.random() * 1000),
           profileImage: profile.photos[0]?.value || "",
+          googleId : profile.id,
           isVerified: true,
           role: "USER",
         });
+
 
         return done(null, user);
 

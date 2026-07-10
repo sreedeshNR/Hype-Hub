@@ -223,6 +223,15 @@ const postChangeEmail = async (req, res, next) => {
     const { newEmail } = req.body;
     const user = await profileService.getUserById(req.session.user._id);
 
+    if(user.googleId){
+      return res.status(403).render("user/profile/change-email",{
+        title: "Change Email",
+        user,
+        errors: { newEmail: "Google account email cannot be changed."},
+        success: null,
+      })
+    }
+
     if (!newEmail || newEmail.trim() === "") {
       return res.status(400).render("user/profile/change-email", {
         title: "Change Email",

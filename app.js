@@ -32,6 +32,8 @@ const profileRoutes = require("./routes/user/profileRoutes");
 const addressRoutes = require("./routes/user/addressRoutes");
 const adminAuthRoutes = require("./routes/admin/adminAuthRoutes");
 const adminRoutes = require("./routes/admin/adminRoutes");
+
+
 const errorHandler = require("./middlewares/errorMiddleware");
 
 app.use("/", authRoutes);
