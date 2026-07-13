@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Category Management - HypeHub Admin</title>
+  <link rel="stylesheet" href="/css/admin.css"/>
+</head>
+<body>
+
+  <div class="admin-container">
+    <%- include('partials/sidebar') %>
+
+    <div class="admin-main">
+      <h2 class="page-title">Category Management</h2>
+
+      <!-- Success/Error Messages -->
+      <% if (success) { %>
+        <div class="success-msg" id="successMsg"><%= success %></div>
+      <% } %>
+      <% if (typeof error !== "undefined" && error) { %>
+        <div class="error-msg"><%= error %></div>
+      <% } %>
+
+      <!-- Top Bar -->
+      <div class="category-topbar">
+
+        <!-- Search -->
+        <form action="/admin/categories" method="GET" id="searchForm">
+          <div class="search-bar">
+            <input
+              type="text"
+              name="search"
+              id="searchInput"
+              placeholder="Search by name..."
+              value="<%= search %>"
+            />
+            <button type="submit" class="btn-search">Search</button>
+            <% if (search) { %>
+              <a href="/admin/categories" class="btn-clear">✕ Clear</a>
+            <% } %>
+          </div>
+        </form>
+
+        <!-- Add Button -->
+        <a href="/admin/categories/add" class="btn-primary">+ New Category</a>
+
+      </div>
+
+      <!-- Categories Table -->
+      <div class="table-wrap">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>CATEGORY NAME</th>
+              <th>DESCRIPTION</th>
+              <th>STATUS</th>
+              <th>CREATED DATE</th>
+              <th>ACTIONS</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% if (categories.length === 0) { %>
+              <tr>
+                <td colspan="5" class="empty-row">No categories found.</td>
+              </tr>
+            <% } else { %>
+              <% categories.forEach(category => { %>
+                <tr>
+                  <td>
+                    <div class="category-name-cell">
+                      <% if (category.image) { %>
+                        <img src="<%= category.image %>" alt="<%= category.name %>" class="category-thumb"/>
+                      <% } else { %>
+                        <div class="category-thumb-placeholder"></div>
+                      <% } %>
+                      <%= category.name %>
+                    </div>
+                  </td>
+                    <td class="description-cell">
+                    <% if (category.description) { %>
+                        <%= category.description.length > 40
+                        ? category.description.substring(0, 40) + "..."
+                        : category.description %>
+                    <% } else { %>
+                        -
+                    <% } %>
+                    </td>
+                  <td>
+                    <span class="status-badge <%= category.isActive ? 'active' : 'blocked' %>">
+                      <%= category.isActive ? 'Active' : 'Inactive' %>
+                    </span>
+                  </td>
+                  <td>
+                    <%= category.createdAt.toLocaleDateString('en-US', {
+                      day: 'numeric', month: 'short', year: 'numeric'
+                    }) %>
+                  </td>
+                  <td>
+                    <div class="action-btns">
+
+                      <!-- Edit -->
+                      <a href="/admin/categories/edit/<%= category._id %>" class="action-btn edit-btn" title="Edit">
+                        <img src="/images/icons/edit.svg" width="16" height="16" alt="Edit"/>
+                      </a>
+
+                                <!-- Toggle Active/Inactive -->
+                                <% 
+                                const toggleIcon = category.isActive ? '⛔' : '✅';
+                                const toggleTitle = category.isActive ? 'Deactivate' : 'Activate';
+                                const toggleMsg = `Are you sure you want to ${category.isActive ? 'deactivate' : 'activate'} ${category.name}?`;
+                                const toggleConfirm = category.isActive ? 'DEACTIVATE' : 'ACTIVATE';
+                                %>
+
+                                <form action="/admin/categories/toggle/<%= category._id %>" method="POST" id="toggle-<%= category._id %>">
+                                <button type="button"
+                                    class="action-btn toggle-btn"
+                                    title="<%= toggleTitle %>"
+                                    data-icon="<%= toggleIcon %>"
+                                    data-title="<%= toggleTitle %> Category"
+                                    data-message="<%= toggleMsg %>"
+                                    data-confirm="<%= toggleConfirm %>"
+                                    data-form="toggle-<%= category._id %>"
+                                    onclick="handleToggle(this)">
+                                    <img src="/images/icons/<%= category.isActive ? 'deactivate.svg' : 'activate.svg' %>" width="16" height="16" alt="Toggle"/>
+                                </button>
+                                </form>
+                        </button>
+                      </form>
+
+                      <!-- Soft Delete -->
+                      <form action="/admin/categories/delete/<%= category._id %>" method="POST"
+                        id="delete-cat-<%= category._id %>">
+                        <button type="button"
+                          class="action-btn delete-btn"
+                          title="Delete"
+                          onclick="
+                            CustomAlert.confirm({
+                              icon: '🗑️',
+                              title: 'Delete Category',
+                              message: 'Are you sure you want to delete <%= category.name %>? This cannot be undone.',
+                              confirmText: 'DELETE',
+                              cancelText: 'Cancel',
+                              onConfirm: () => document.getElementById('delete-cat-<%= category._id %>').submit(),
+                              onCancel: () => {}
+                            })
+                          ">
+                          <img src="/images/icons/trash.svg" width="16" height="16" alt="Delete"/>
+                        </button>
+                      </form>
+
+                    </div>
+                  </td>
+                </tr>
+              <% }) %>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination -->
+      <div class="pagination-wrap">
+       <p class="pagination-info">
+            <% if (totalCategories > 0) { %>
+                Showing
+                <%= (currentPage - 1) * 5 + 1 %> -
+                <%= Math.min(currentPage * 5, totalCategories) %>
+                of
+                <%= totalCategories %>
+                categories
+            <% } else { %>
+                No categories found.
+            <% } %>
+            </p>
+
+        <% if (totalPages > 1) { %>
+          <div class="pagination">
+            <!-- Prev -->
+            <% if (currentPage > 1) { %>
+              <a href="/admin/categories?page=<%= currentPage - 1 %>&search=<%= search %>" class="page-btn">‹</a>
+            <% } %>
+
+            <!-- Pages -->
+            <% for (let i = 1; i <= totalPages; i++) { %>
+              <a href="/admin/categories?page=<%= i %>&search=<%= search %>"
+                class="page-btn <%= currentPage === i ? 'active' : '' %>">
+                <%= i %>
+              </a>
+            <% } %>
+
+            <!-- Next -->
+            <% if (currentPage < totalPages) { %>
+              <a href="/admin/categories?page=<%= currentPage + 1 %>&search=<%= search %>" class="page-btn">›</a>
+            <% } %>
+          </div>
+        <% } %>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="/js/loader.js"></script>
+  <script src="/js/main.js"></script>
+  <script>
+    // Auto hide success message
+    const msg = document.getElementById("successMsg");
+    if (msg) {
+        setTimeout(() => {
+        msg.style.transition = "opacity 0.5s";
+        msg.style.opacity = "0";
+        setTimeout(() => msg.remove(), 500);
+        }, 3000);
+    }
+
+    // Toggle handler
+    function handleToggle(btn) {
+        CustomAlert.confirm({
+        icon: btn.dataset.icon,
+        title: btn.dataset.title,
+        message: btn.dataset.message,
+        confirmText: btn.dataset.confirm,
+        cancelText: 'Cancel',
+        onConfirm: () => document.getElementById(btn.dataset.form).submit(),
+        onCancel: () => {}
+        });
+    }
+    </script>
+
+
+</body>
+</html>

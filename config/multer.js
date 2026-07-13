@@ -11,7 +11,7 @@ const storage = new CloudinaryStorage({
   },
 });
 
-const fileFilter = (req,res,cb) =>{
+const fileFilter = (req,file,cb) =>{
   const allowedTypes = ["image/jpeg","image/jpg","image/png","image/webp"]
 
   if(allowedTypes.includes(file.mimetype)){
@@ -23,6 +23,7 @@ const fileFilter = (req,res,cb) =>{
 
 const upload = multer({
   storage,
+  fileFilter,
   limits: { fileSize: 2 * 1024 * 1024 }, // 2MB max
 });
 

@@ -520,3 +520,287 @@ body {
   font-size: 13px;
   margin-bottom: 16px;
 }
+
+/* Category Top Bar */
+.category-topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  gap: 16px;
+}
+
+.category-topbar .btn-primary {
+  width: auto;
+  white-space: nowrap;
+  padding: 10px 20px;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.category-topbar .search-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+}
+
+.category-topbar .search-bar input {
+  flex: 1;
+  max-width: 300px;
+}
+
+/* Category Thumbnail */
+.category-name-cell {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.category-thumb {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  object-fit: cover;
+  border: 1px solid #333;
+}
+
+.category-thumb-placeholder {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background-color: #1a1a1a;
+  border: 1px solid #333;
+}
+
+.description-cell {
+  color: #777;
+  font-size: 12px;
+  max-width: 200px;
+}
+
+/* Action Buttons */
+.action-btns {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.action-btn {
+  background: none;
+  border: 1px solid #333;
+  border-radius: 6px;
+  padding: 6px 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.action-btn:hover {
+  border-color: #ff6b35;
+}
+
+.delete-btn:hover {
+  border-color: #ff4444;
+}
+
+/* Pagination Info */
+.pagination-wrap {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 16px;
+}
+
+.pagination-info {
+  font-size: 12px;
+  color: #555;
+}
+
+/* Form Card */
+.form-card {
+  background-color: #1a1a1a;
+  border: 1px solid #222;
+  border-radius: 12px;
+  padding: 24px;
+}
+
+.form-card-title {
+  font-size: 11px;
+  letter-spacing: 2px;
+  color: #aaaaaa;
+  margin-bottom: 16px;
+}
+
+/* Textarea */
+.form-group textarea {
+  width: 100%;
+  padding: 10px 12px;
+  background-color: #111;
+  border: 1px solid #333;
+  border-radius: 6px;
+  color: #ffffff;
+  font-size: 13px;
+  outline: none;
+  resize: vertical;
+  font-family: Arial, sans-serif;
+}
+
+.form-group textarea:focus {
+  border-color: #ff6b35;
+}
+
+/* Select */
+.form-group select {
+  width: 200px;
+  padding: 10px 12px;
+  background-color: #111;
+  border: 1px solid #333;
+  border-radius: 6px;
+  color: #ffffff;
+  font-size: 13px;
+  outline: none;
+}
+
+.form-group select:focus {
+  border-color: #ff6b35;
+}
+
+/* Override btn-primary full width in forms */
+.form-actions .btn-primary {
+  width: auto;
+  padding: 12px 24px;
+}
+
+.form-actions .btn-cancel {
+  padding: 12px 24px;
+  background-color: #1a1a1a;
+  color: #aaaaaa;
+  border: 1px solid #333;
+  border-radius: 8px;
+  font-size: 13px;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.form-actions .btn-cancel:hover {
+  color: #ffffff;
+  border-color: #555;
+}
+
+.field-error {
+  color: #ff4444;
+  font-size: 11px;
+  margin-top: 4px;
+  display: block;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 16px;
+}
+
+.form-group label {
+  font-size: 11px;
+  letter-spacing: 1px;
+  color: #aaaaaa;
+  margin-bottom: 6px;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 10px 12px;
+  background-color: #111;
+  border: 1px solid #333;
+  border-radius: 6px;
+  color: #ffffff;
+  font-size: 13px;
+  outline: none;
+}
+
+.form-group input:focus {
+  border-color: #ff6b35;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+/* Slug */
+.slug-wrap {
+  position: relative;
+}
+
+.slug-wrap input {
+  width: 100%;
+  padding: 10px 36px 10px 12px;
+  background-color: #111;
+  border: 1px solid #333;
+  border-radius: 6px;
+  color: #555;
+  font-size: 13px;
+  outline: none;
+}
+
+.slug-lock {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 14px;
+}
+
+/* Image Upload */
+.image-upload-area {
+  border: 2px dashed #333;
+  border-radius: 12px;
+  padding: 40px;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.2s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.image-upload-area:hover {
+  border-color: #ff6b35;
+}
+
+.image-upload-area p {
+  color: #aaaaaa;
+  font-size: 13px;
+}
+
+.upload-hint {
+  color: #555 !important;
+  font-size: 11px !important;
+}
+
+/* Breadcrumb */
+.breadcrumb {
+  font-size: 12px;
+  color: #555;
+  margin-bottom: 16px;
+}
+
+.breadcrumb a {
+  color: #aaaaaa;
+  text-decoration: none;
+}
+
+.breadcrumb a:hover {
+  color: #ff6b35;
+}
+
+.breadcrumb span {
+  color: #ff6b35;
+}

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Edit Category - HypeHub Admin</title>
+  <link rel="stylesheet" href="/css/admin.css"/>
+</head>
+<body>
+
+  <div class="admin-container">
+    <%- include('partials/sidebar') %>
+
+    <div class="admin-main">
+
+      <!-- Breadcrumb -->
+      <div class="breadcrumb">
+        <a href="/admin/categories">Categories</a> →
+        <span>Edit Category</span>
+      </div>
+
+      <h2 class="page-title">Edit Category</h2>
+
+      <% if (typeof errors !== 'undefined' && errors.general) { %>
+        <div class="error-msg"><%= errors.general %></div>
+      <% } %>
+
+      <form action="/admin/categories/edit/<%= category._id %>" method="POST" enctype="multipart/form-data">
+
+        <!-- Category Info Card -->
+        <div class="form-card">
+
+          <div class="form-row">
+            <!-- Category Name -->
+            <div class="form-group">
+              <label>CATEGORY NAME</label>
+              <input
+                type="text"
+                name="name"
+                id="categoryName"
+                value="<%= category.name %>"
+                oninput="generateSlug(this.value)"
+              />
+              <% if (typeof errors !== 'undefined' && errors.name) { %>
+                <span class="field-error"><%= errors.name %></span>
+              <% } %>
+            </div>
+
+            <!-- Slug -->
+            <div class="form-group">
+              <label>CATEGORY SLUG (AUTO-GENERATED)</label>
+              <div class="slug-wrap">
+                <input
+                  type="text"
+                  name="slug"
+                  id="categorySlug"
+                  value="<%= category.slug || '' %>"
+                  readonly
+                />
+                <span class="slug-lock">🔒</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Description -->
+          <div class="form-group">
+            <label>SHORT DESCRIPTION</label>
+            <textarea name="description" rows="4">
+              <%= category.description || '' %>
+            </textarea>
+            <% if (typeof errors !== 'undefined' && errors.description) { %>
+              <span class="field-error"><%= errors.description %></span>
+            <% } %>
+          </div>
+
+          <!-- Status -->
+          <div class="form-group">
+            <label>CATEGORY STATUS</label>
+            <select name="isActive">
+              <option value="true" <%= category.isActive ? 'selected' : '' %>>Active</option>
+              <option value="false" <%= !category.isActive ? 'selected' : '' %>>Inactive</option>
+            </select>
+          </div>
+
+        </div>
+
+        <!-- Category Image -->
+        <div class="form-card" style="margin-top: 20px;">
+          <h3 class="form-card-title">CATEGORY MEDIA</h3>
+
+          <!-- Current Image -->
+          <% if (category.image) { %>
+            <div style="margin-bottom: 16px;">
+              <p style="font-size: 12px; color: #aaa; margin-bottom: 8px;">CURRENT IMAGE</p>
+              <img src="<%= category.image %>" alt="Current" style="width: 200px; border-radius: 8px; border: 1px solid #333;"/>
+            </div>
+          <% } %>
+
+          <div class="image-upload-area" onclick="document.getElementById('categoryImage').click()">
+            <img src="/images/icons/upload.svg" width="40" height="40" alt="Upload" id="uploadIcon"/>
+            <img id="imagePreview" src="" alt="Preview" style="display:none; max-width:200px; border-radius:8px;"/>
+            <p>Click to replace image</p>
+            <p class="upload-hint">SVG, PNG, JPG (max. 800×400px)</p>
+            <input
+              type="file"
+              name="image"
+              id="categoryImage"
+              accept="image/*"
+              style="display:none;"
+              onchange="previewImage(this)"
+            />
+          </div>
+
+        </div>
+
+        <!-- Form Actions -->
+        <div class="form-actions" style="margin-top: 20px;">
+          <a href="/admin/categories" class="btn-cancel">Cancel</a>
+          <button type="submit" class="btn-primary">SAVE CHANGES →</button>
+        </div>
+
+      </form>
+
+    </div>
+  </div>
+
+  <script src="/js/loader.js"></script>
+  <script src="/js/main.js"></script>
+  <script>
+    function generateSlug(name) {
+      const slug = name
+        .toLowerCase()
+        .trim()
+        .replace(/[^a-z0-9\s-]/g, "")
+        .replace(/\s+/g, "-");
+      document.getElementById("categorySlug").value = slug;
+    }
+
+    function previewImage(input) {
+      if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const preview = document.getElementById("imagePreview");
+          const icon = document.getElementById("uploadIcon");
+          preview.src = e.target.result;
+          preview.style.display = "block";
+          icon.style.display = "none";
+        };
+        reader.readAsDataURL(input.files[0]);
+      }
+    }
+  </script>
+</body>
+</html>

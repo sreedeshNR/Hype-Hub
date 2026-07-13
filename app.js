@@ -32,6 +32,7 @@ const profileRoutes = require("./routes/user/profileRoutes");
 const addressRoutes = require("./routes/user/addressRoutes");
 const adminAuthRoutes = require("./routes/admin/adminAuthRoutes");
 const adminRoutes = require("./routes/admin/adminRoutes");
+const categoryRoutes = require("./routes/admin/categoryRoutes")
 
 
 const errorHandler = require("./middlewares/errorMiddleware");
@@ -42,6 +43,7 @@ app.use("/", profileRoutes);
 app.use("/", addressRoutes);
 app.use("/", adminAuthRoutes);
 app.use("/", adminRoutes);
+app.use("/",categoryRoutes)
 
 app.use(errorHandler)
 

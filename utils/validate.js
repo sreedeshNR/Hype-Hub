@@ -161,6 +161,23 @@ const validateResetPassword = (data) => {
   return errors;
 };
 
+const validateCategory = (data)=>{
+  const errors = {};
+
+  if(!data.name || data.name.trim() === ""){
+    errors.name = "Category name is required.";
+  }else if(!/^[A-Za-z\s]{3,50}$/.test(data.name.trim())){
+    errors.name = "Category name must be 3-50 characters and contain only letters and space.";
+  }
+
+
+  if(data.description && data.description.trim().length > 200){
+    errors.description = "Description cannot exceed 200 characters."
+  }
+
+  return errors;
+}
+
 module.exports = {
   validateRegister,
   validateLogin,
@@ -168,4 +185,5 @@ module.exports = {
   validateAddress,
   validateChangePassword,
   validateResetPassword,
+  validateCategory,
 };

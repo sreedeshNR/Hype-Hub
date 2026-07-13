@@ -23,7 +23,7 @@ const verifyCurrentPassword  = async(currentPassword, hashedPassword)=>{
     return await bcrypt.compare(currentPassword,hashedPassword)
 }
 
-const updatePassword = async(userID, newPassword)=>{
+const updatePassword = async(userId, newPassword)=>{
     const hashedPassword = await bcrypt.hash(newPassword,10);
     return await User.findByIdAndUpdate(userId, { password: hashedPassword})
 }

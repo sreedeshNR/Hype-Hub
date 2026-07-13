@@ -4,16 +4,23 @@
   <div class="sidebar-role">Admin Panel</div>
 
   <nav class="admin-nav">
-    <a href="/admin/dashboard" 
-      class="nav-item <%= title === 'Dashboard' ? 'active' : '' %>">
-      📊 Dashboard
+    <a href="/admin/dashboard" class="nav-item <%= title === 'Dashboard' ? 'active' : '' %>">
+      <img src="/images/icons/dashboard.svg" width="16" height="16" alt="Dashboard"/>
+      Dashboard
     </a>
-    <a href="/admin/users" 
-      class="nav-item <%= title === 'User Management' ? 'active' : '' %>">
-      👥 Users
+    <a href="/admin/users" class="nav-item <%= title === 'User Management' ? 'active' : '' %>">
+      <img src="/images/icons/users.svg" width="16" height="16" alt="Users"/>
+      Users
+    </a>
+    <a href="/admin/categories" class="nav-item <%= title === 'Category Management' ? 'active' : '' %>">
+      <img src="/images/icons/categories.svg" width="16" height="16" alt="Categories"/>
+      Categories
     </a>
   </nav>
 
-  <a href="/admin/logout" class="sidebar-logout">↪ Logout</a>
+  <a href="/admin/logout" class="sidebar-logout">
+    <img src="/images/icons/logout.svg" width="16" height="16" alt="Logout"/>
+    Logout
+  </a>
 
 </div>
