@@ -1,3 +1,4 @@
+const { isAdminLogin } = require("../../middlewares/adminMiddleware");
 const categoryService = require("../../services/admin/categoryService")
 const { validateCategory } = require("../../utils/validate")
 
@@ -72,7 +73,7 @@ const postAddCategory = async(req,res,next)=>{
         })
 
         console.log(errors);
-        
+
          if (!req.file) {
              errors.image = "Category image is required.";
          }
@@ -120,8 +121,142 @@ const postAddCategory = async(req,res,next)=>{
     }
 }
 
+
+const getEditCategory = async(req,res,next)=>{
+    try{
+        const category = await categoryService.getCategoryById(req.params.id);
+
+        if(!category){
+            return res.redirect("/admin/categories");
+        }
+
+        res.status(200).render("admin/edit-category",{
+            title: "Edit Category",
+            admin: req.session.admin,
+            category,
+            errors: {},
+            layout: false,
+        })
+    }catch (error){
+        next(error)
+    }
+}
+
+
+const postEditCategory = async(req,res,next)=>{
+    console.log("POST EDIT HIT");
+    try{
+        const { name, description, isActive} = req.body;
+
+        if(req.uploadError){
+            const category = await categoryService.getCategoryById(req.params.id)
+
+            return res.status(400).render("admin/edit-category",{
+                title: "Edit Category",
+                admin: req.session.admin,
+                category,
+                errors: {
+                    general: req.uploadError,
+                },
+                layout: false,
+            })
+        }
+
+        const errors = validateCategory({
+            name,
+            description,
+        })
+
+        if(Object.keys(errors).length > 0){
+            const category = await categoryService.getCategoryById(req.params.id)
+
+            category.name = name;
+            category.description = description;
+            category.isActive = isActive === "true";
+
+            return res.status(400).render("admin/edit-category",{
+                title: "Edit Category",
+                admin: req.session.admin,
+                category,
+                errors,
+                layout: false,
+            })
+        }
+
+        await categoryService.updateCategory(req.params.id,{
+            name,
+            description,
+            image: req.file ? req.file.path : null,
+            isActive : isActive === "true",
+        })
+
+        req.session.adminSuccess = "Category updated successfully."
+
+        res.redirect("/admin/categories");
+    }catch(error){
+
+            console.log("ERROR:", error);
+        if(error.status === 409){
+            const category = await categoryService.getCategoryById(req.params.id)
+
+            category.name = req.body.name
+            category.description = req.body.description
+            category.isActive = req.body.isActive === "true"
+
+            return res.status(400).render("admin/edit-category",{
+                title: "Edit Category",
+                admin: req.session.admin,
+                category,
+                errors: {
+                    name: error.message,
+                },
+                layout: false,
+            })
+        }
+
+        next(error);
+    }
+}
+
+
+const toggleCategoryStatus = async(req,res,next)=>{
+
+    try{
+        const category = await categoryService.toggleCategoryStatus(req.params.id)
+
+        req.session.adminSuccess = `Category ${category.name} has been ${
+            category.isActive ? "activated" : "deactivated"
+        } successfully.`
+        
+        res.redirect("/admin/categories");
+
+    }catch (error){
+        next(error)
+    }
+}
+
+
+
+const deleteCategory = async(req,res,next)=>{
+    try{
+        const category = await categoryService.deleteCategory(req.params.id)
+
+        req.session.adminSuccess = `Category ${category.name} deleted successfully.`
+
+        res.redirect("/admin/categories");
+    
+    }catch(error){
+        next(error);
+    }
+}
+
 module.exports = {
     getCategories,
     getAddCategory,
     postAddCategory,
+    getEditCategory,
+    postEditCategory,
+    toggleCategoryStatus,
+    deleteCategory,
+
 }

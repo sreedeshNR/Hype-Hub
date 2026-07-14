@@ -65,9 +65,7 @@
           <!-- Description -->
           <div class="form-group">
             <label>SHORT DESCRIPTION</label>
-            <textarea name="description" rows="4">
-              <%= category.description || '' %>
-            </textarea>
+            <textarea name="description" rows="4"><%= category.description || '' %></textarea>
             <% if (typeof errors !== 'undefined' && errors.description) { %>
               <span class="field-error"><%= errors.description %></span>
             <% } %>
