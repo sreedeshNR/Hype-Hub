@@ -33,17 +33,28 @@ const addressRoutes = require("./routes/user/addressRoutes");
 const adminAuthRoutes = require("./routes/admin/adminAuthRoutes");
 const adminRoutes = require("./routes/admin/adminRoutes");
 const categoryRoutes = require("./routes/admin/categoryRoutes")
-
+const brandRoutes = require("./routes/admin/brandRoutes")
+const productRoutes = require("./routes/admin/productRoutes")
+const userProductRoutes = require("./routes/user/productRoutes")
+const cartRoutes = require("./routes/user/cartRoutes")
 
 const errorHandler = require("./middlewares/errorMiddleware");
 
-app.use("/", authRoutes);
 app.use("/", homeRoutes);
+
+app.use("/", authRoutes);
 app.use("/", profileRoutes);
 app.use("/", addressRoutes);
+
 app.use("/", adminAuthRoutes);
 app.use("/", adminRoutes);
-app.use("/",categoryRoutes)
+
+app.use("/", categoryRoutes);
+app.use("/", brandRoutes);
+app.use("/", productRoutes);
+
+app.use("/", userProductRoutes)
+app.use("/", cartRoutes);
 
 app.use(errorHandler)
 

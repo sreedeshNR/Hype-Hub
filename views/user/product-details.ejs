@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/css/product-details.css">
+</head>
+<body>
+
+    <!-- Include Navbar Here -->
+
+    <div class="details-container">
+        
+        <!--  Breadcrumbs -->
+        <div class="breadcrumbs">
+            <a href="/">Home</a> > 
+            <a href="/shop">Shop</a> > 
+            <a href="/shop?category=<%= product.categoryId._id %>"><%= product.categoryId.name %></a> > 
+            <span><%= product.productName %></span>
+        </div>
+
+        <div class="product-main">
+            
+            <!-- LEFT: Image Gallery & Zoom -->
+            <div class="product-gallery">
+                <div class="image-zoom-container" id="zoomContainer" onmousemove="zoomImage(event)" onmouseleave="resetZoom()">
+                    <!-- Default to the first image -->
+                    <img id="mainImage" src="<%= variant.images[0] || '/images/placeholder.jpg' %>" alt="<%= product.productName %>">
+                </div>
+                
+                <div class="thumbnail-list">
+                    <% variant.images.forEach((img, index) => { %>
+                        <img class="thumbnail <%= index === 0 ? 'active' : '' %>" 
+                             src="<%= img %>" 
+                             onclick="changeImage(this, '<%= img %>')">
+                    <% }) %>
+                </div>
+            </div>
+
+            <!-- RIGHT: Product Info -->
+            <div class="product-info">
+                <div class="brand-name"><%= product.brandId.name %></div>
+                <h1><%= product.productName %></h1>
+                
+                <!-- Ratings Placeholder -->
+                <div style="color: #FFD700; margin-bottom: 20px;">
+                    ★★★★☆ <span style="color: #888; font-size: 14px;">(24 Reviews)</span>
+                </div>
+
+                <!-- Price & Discount -->
+                <div class="price-section">
+                    <% const activePrice = variant.salePrice > 0 ? variant.salePrice : variant.regularPrice; %>
+                    <span class="sale-price">₹<%= activePrice %></span>
+                    
+                    <% if (variant.salePrice > 0 && variant.salePrice < variant.regularPrice) { %>
+                        <span class="regular-price">₹<%= variant.regularPrice %></span>
+                        <% const discount = Math.round(((variant.regularPrice - variant.salePrice) / variant.regularPrice) * 100); %>
+                        <span class="discount-badge"><%= discount %>% OFF</span>
+                    <% } %>
+                </div>
+
+                <!-- Stock Information -->
+                <div class="stock-info <%= totalStock > 0 ? 'in-stock' : 'out-of-stock' %>">
+                    <%= totalStock > 0 ? `In Stock (${totalStock} units available)` : 'Sold Out - Currently Unavailable' %>
+                </div>
+
+                <div class="description" style="color: #ccc; line-height: 1.6; margin-bottom: 25px;">
+                    <%= product.description %>
+                </div>
+
+                <!-- Sizes List -->
+                <h4 style="margin-bottom: 10px;">Select Size</h4>
+                <div class="size-selector">
+                    <% variant.sizes.forEach(s => { %>
+                        <button class="size-btn" <%= s.quantity === 0 ? 'disabled' : '' %> onclick="selectSize(this, <%= s.size %>)">
+                            UK <%= s.size %>
+                        </button>
+                    <% }) %>
+                </div>
+
+                <!-- Hidden form to handle Add to Cart  -->
+                <form action="/cart/add" method="POST" id="addToCartForm">
+                    <input type="hidden" name="productId" value="<%= product._id %>">
+                    <input type="hidden" name="variantId" value="<%= variant._id %>">
+                    <input type="hidden" name="selectedSize" id="selectedSizeInput" required>
+                    
+                    <!-- Disable if out of stock -->
+                    <% if (totalStock > 0) { %>
+                        <button type="button" onclick="submitCart()" class="add-to-cart-btn btn-active" id="cartBtn">Add to Cart</button>
+                    <% } else { %>
+                        <button type="button" class="add-to-cart-btn btn-disabled" disabled>Out of Stock</button>
+                    <% } %>
+                </form>
+
+            </div>
+        </div>
+
+        <!--  Related Products -->
+        <% if (relatedProducts && relatedProducts.length > 0) { %>
+            <div class="related-section">
+                <h2>You Might Also Like</h2>
+                <div class="related-grid">
+                    <% relatedProducts.forEach(rel => { %>
+                        <a href="/product/<%= rel.slug %>" class="related-card">
+                            <img src="<%= rel.image %>" alt="<%= rel.productName %>">
+                            <div class="related-card-info">
+                                <div style="color: #888; font-size: 12px; margin-bottom: 5px;"><%= product.categoryId.name %></div>
+                                <h3 style="margin: 0 0 10px 0; font-size: 16px;"><%= rel.productName %></h3>
+                                <span style="color: #4dabf7; font-weight: bold;">₹<%= rel.price %></span>
+                            </div>
+                        </a>
+                    <% }) %>
+                </div>
+            </div>
+        <% } %>
+
+    </div>
+
+    <!-- Frontend Logic for Images, Zoom, and Size Selection -->
+    <script>
+        const mainImage = document.getElementById('mainImage');
+        const zoomContainer = document.getElementById('zoomContainer');
+
+        function zoomImage(e) {
+            const { left, top, width, height } = zoomContainer.getBoundingClientRect();
+            const x = ((e.clientX - left) / width) * 100;
+            const y = ((e.clientY - top) / height) * 100;
+
+            mainImage.style.transformOrigin = `${x}% ${y}%`;
+            mainImage.style.transform = 'scale(2)'; 
+        }
+
+        function resetZoom() {
+            mainImage.style.transformOrigin = 'center center';
+            mainImage.style.transform = 'scale(1)';
+        }
+
+        function changeImage(element, src) {
+            mainImage.src = src;
+            document.querySelectorAll('.thumbnail').forEach(t => t.classList.remove('active'));
+            element.classList.add('active');
+        }
+
+        // Size Selection Logic
+        function selectSize(element, size) {
+            document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('selected'));
+            element.classList.add('selected');
+            document.getElementById('selectedSizeInput').value = size;
+        }
+
+        // Cart Submission Validation
+        function submitCart() {
+            const size = document.getElementById('selectedSizeInput').value;
+            if (!size) {
+                alert('Please select a size before adding to cart.');
+                return;
+            }
+            document.getElementById('addToCartForm').submit();
+        }
+    </script>
+</body>
+</html>

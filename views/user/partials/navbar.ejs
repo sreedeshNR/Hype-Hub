@@ -4,14 +4,14 @@
   </div>
 
   <div class="nav-links">
-    <a href="#">Market</a>
+    <a href="/shop">Market</a>
     <a href="#">Editorial</a>
     <a href="#">About Us</a>
     <a href="#">Contact Us</a>
   </div>
 
   <div class="nav-actions">
-    <% if (user) { %>
+    <% if (typeof user !== 'undefined' && user) { %>
       <a href="/profile" class="nav-icon" title="Profile">
         <img src="/images/icons/profile.png" alt="">
       </a>

@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Edit Product - HypeHub Admin</title>
+  <link rel="stylesheet" href="/css/admin.css"/>
+  
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
+
+  <style>
+    .image-upload-container { display: flex; gap: 20px; margin-top: 20px; }
+    .upload-box {
+      width: 150px; height: 150px; border: 2px dashed #444; border-radius: 12px;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      cursor: pointer; position: relative; overflow: hidden; background: #1a1a24;
+    }
+    .upload-box img.preview { width: 100%; height: 100%; object-fit: cover; }
+    
+    .modal-overlay {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.8); display: none; justify-content: center; align-items: center; z-index: 1000;
+    }
+    .cropper-modal { background: #1a1a24; padding: 20px; border-radius: 12px; width: 600px; max-width: 90%; }
+    .cropper-container-box { width: 100%; height: 400px; background: #000; margin-bottom: 20px; }
+    .modal-actions { display: flex; justify-content: flex-end; gap: 10px; }
+  </style>
+</head>
+<body>
+
+  <div class="admin-container">
+    <%- include('partials/sidebar') %>
+
+    <div class="admin-main">
+      <div class="breadcrumb">
+        <a href="/admin/products">Products</a> → <span>Edit Product</span>
+      </div>
+
+      <% if (typeof errors !== 'undefined' && errors.general) { %>
+        <div class="error-msg"><%= errors.general %></div>
+      <% } %>
+
+      <form action="/admin/products/edit/<%= product._id %>" method="POST" enctype="multipart/form-data" id="addProductForm">
+        
+        <input type="file" id="finalImages" name="images" multiple style="display: none;">
+        
+        <!-- SAFE FIX: Only output the ID if variant is not null -->
+        <input type="hidden" name="variantId" value="<%= variant ? variant._id : '' %>">
+
+        <!-- 1. PRODUCT INFORMATION (This is always safe) -->
+        <div class="form-card">
+          <h3 class="form-card-title"><span class="icon">ℹ️</span> Edit Product Information</h3>
+          
+          <div class="form-row" style="display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 20px;">
+            <div class="form-group">
+              <label>PRODUCT NAME</label>
+              <input type="text" name="productName" value="<%= product.productName %>" oninput="generateSlug(this.value)">
+              <input type="hidden" name="slug" id="productSlug" value="<%= product.slug %>">
+              <% if (typeof errors !== 'undefined' && errors.productName) { %><span class="field-error"><%= errors.productName %></span><% } %>
+            </div>
+
+            <div class="form-group">
+              <label>CATEGORY</label>
+              <select name="categoryId">
+                <% categories.forEach(cat => { %>
+                  <option value="<%= cat._id %>" <%= product.categoryId && product.categoryId.toString() === cat._id.toString() ? 'selected' : '' %>><%= cat.name %></option>
+                <% }) %>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>BRAND</label>
+              <select name="brandId">
+                <% brands.forEach(brand => { %>
+                  <option value="<%= brand._id %>" <%= product.brandId && product.brandId.toString() === brand._id.toString() ? 'selected' : '' %>><%= brand.name %></option>
+                <% }) %>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row" style="display: grid; grid-template-columns: 1fr 3fr; gap: 20px; margin-top: 15px;">
+            <div class="form-group">
+              <label>GENDER</label>
+              <select name="gender">
+                <option value="UNISEX" <%= product.gender === 'UNISEX' ? 'selected' : '' %>>Unisex</option>
+                <option value="MEN" <%= product.gender === 'MEN' ? 'selected' : '' %>>Men</option>
+                <option value="WOMEN" <%= product.gender === 'WOMEN' ? 'selected' : '' %>>Women</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>DESCRIPTION</label>
+              <textarea name="description" rows="2"><%= product.description %></textarea>
+              <% if (typeof errors !== 'undefined' && errors.description) { %><span class="field-error"><%= errors.description %></span><% } %>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. PRODUCT VARIANTS (With Safety Nets) -->
+        <div class="form-card" style="margin-top: 20px;">
+          <h3 class="form-card-title"><span class="icon">⬡</span> Edit Variant Details</h3>
+
+          <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin-top: 15px;">
+            <div class="form-group">
+              <label>COLOR</label>
+              <input type="text" name="color" value="<%= variant ? variant.color : '' %>">
+              <% if (typeof errors !== 'undefined' && errors.color) { %><span class="field-error"><%= errors.color %></span><% } %>
+            </div>
+            <div class="form-group">
+              <label>REGULAR PRICE</label>
+              <input type="number" name="regularPrice" value="<%= variant ? variant.regularPrice : '' %>">
+              <% if (typeof errors !== 'undefined' && errors.regularPrice) { %><span class="field-error"><%= errors.regularPrice %></span><% } %>
+            </div>
+            <div class="form-group">
+              <label>SALE PRICE</label>
+              <input type="number" name="salePrice" value="<%= variant ? variant.salePrice : '' %>">
+              <% if (typeof errors !== 'undefined' && errors.salePrice) { %><span class="field-error"><%= errors.salePrice %></span><% } %>
+            </div>
+          </div>
+
+          <!-- Pre-fill Existing Sizes Safely -->
+          <div class="form-group" style="margin-top: 20px;">
+            <label>SIZE & QUANTITY</label>
+            <div id="sizeContainer">
+              <% if (variant && variant.sizes && variant.sizes.length > 0) { %>
+                <% variant.sizes.forEach(s => { %>
+                  <div class="size-row" style="display: flex; gap: 15px; margin-bottom: 10px; align-items: center;">
+                    <input type="number" name="size" value="<%= s.size %>" style="width: 120px;" required>
+                    <input type="number" name="quantity" value="<%= s.quantity %>" style="width: 120px;" required>
+                    <button type="button" class="btn-cancel" onclick="removeSizeRow(this)" style="padding: 8px 12px;">✕</button>
+                  </div>
+                <% }) %>
+              <% } %>
+            </div>
+            <button type="button" class="btn-secondary" onclick="addSizeRow()" style="margin-top: 10px; font-size: 12px;">+ Add Size</button>
+            <div class="field-error" id="sizeError" style="margin-top: 5px; color: #ff4444;">
+              <% if (typeof errors !== 'undefined' && errors.sizes) { %><%= errors.sizes %><% } %>
+            </div>
+          </div>
+
+          <!-- Display Existing Images Safely -->
+          <div class="form-group" style="margin-top: 30px;">
+            <label>UPDATE IMAGES (Click to replace an image)</label>
+            <div class="field-error" id="imageError" style="color: #ff4444; margin-bottom: 10px;">
+              <% if (typeof errors !== 'undefined' && errors.images) { %><%= errors.images %><% } %>
+            </div>
+            
+            <input type="hidden" name="existingImages" id="existingImagesInput" value='<%= variant && variant.images ? JSON.stringify(variant.images) : "[]" %>'>
+
+            <div class="image-upload-container">
+              <% for(let i = 1; i <= 3; i++) { %>
+                <% const imgUrl = (variant && variant.images && variant.images[i-1]) ? variant.images[i-1] : '' %>
+                <div class="upload-box" onclick="triggerFileInput(<%= i %>)">
+                  <span id="plus-<%= i %>" style="<%= imgUrl ? 'display: none;' : '' %>">+</span>
+                  <img id="preview-<%= i %>" class="preview" src="<%= imgUrl %>" style="<%= imgUrl ? 'display: block;' : 'display: none;' %>" alt="">
+                  <input type="file" id="rawFile-<%= i %>" accept="image/*" style="display: none;" onchange="openCropper(event, <%= i %>)">
+                </div>
+              <% } %>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="form-actions" style="margin-top: 20px; text-align: right;">
+          <a href="/admin/products" class="btn-cancel">CANCEL</a>
+          <button type="button" class="btn-primary" onclick="submitEditForm()">UPDATE PRODUCT</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="cropperModal">
+    <div class="cropper-modal">
+      <h3 style="margin-top:0; color:#fff;">Crop New Image</h3>
+      <div class="cropper-container-box">
+        <img id="cropperImage" src="" style="max-width: 100%;">
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn-cancel" onclick="closeCropperModal()">Cancel</button>
+        <button type="button" class="btn-primary" onclick="confirmCrop()">Crop & Save</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/loader.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+  <script src="/js/main.js"></script>
+  
+  <script>
+    function submitEditForm() {
+      const dataTransfer = new DataTransfer();
+      croppedFiles.forEach((file) => {
+        dataTransfer.items.add(file);
+      });
+
+      document.getElementById('finalImages').files = dataTransfer.files;
+      document.getElementById('addProductForm').submit();
+    }
+  </script>
+</body>
+</html>

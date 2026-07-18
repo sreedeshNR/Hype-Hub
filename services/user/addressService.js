@@ -1,4 +1,4 @@
-const Address = require("../../models/addressModel")
+const Address = require("../../models/Address")
 
 const getAllAddresses = async(userId)=>{
     return await Address.find({ userId });

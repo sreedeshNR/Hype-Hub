@@ -13,25 +13,26 @@ const getRegister = (req,res)=>{
 
 const postRegister = async(req,res,next) =>{
   try{
-    const { fullName, username, email, phone, password} = req.body;
+    const { fullName, username, email, phone, password, confirmPassword } = req.body;
 
-    const errors = validateRegister({ fullName, username, email, phone, password});
+    const errors = validateRegister({ fullName, username, email, phone, password, confirmPassword });
+    
     if(Object.keys(errors).length > 0){
       return res.status(400).render("user/auth/register",{
         title: "Register",
         errors,
-        formData: { fullName, username, email, phone},
+        formData: { fullName, username, email, phone },
         layout: false,
       })
     }
 
     try{
-      await authService.registerUser({ fullName, username, email, phone, password})
+      await authService.registerUser({ fullName, username, email, phone, password })
     }catch(serviceError){
       return res.status(serviceError.status || 400).render("user/auth/register",{
         title: "Register",
         errors: { [serviceError.field]: serviceError.message},
-        formData: {fullName, username, email, phone},
+        formData: { fullName, username, email, phone },
         layout: false
       })
     }
@@ -47,8 +48,8 @@ const postRegister = async(req,res,next) =>{
       });
     }
 
-    req.session.otpEmail = email
-    res.redirect("/verify-otp")
+    req.session.otpEmail = email;
+    res.redirect("/verify-otp");
 
   }catch (error){
     next(error)

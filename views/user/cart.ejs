@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/css/cart.css">
+</head>
+<body>
+
+    <!-- Include Navbar Here -->
+
+    <div class="cart-container">
+        
+        <!-- Left: Cart Items list -->
+        <div class="cart-items-section">
+            <div class="cart-header">
+                <h1>Your Cart</h1>
+                <span style="color: #888;"><%= cart.length %> Items</span>
+            </div>
+
+            <% let hasDisabledItems = false; %>
+
+            <% if (cart.length > 0) { %>
+                <% cart.forEach(item => { %>
+                    <% if (item.isDisabled) hasDisabledItems = true; %>
+                    
+                    <div class="cart-item <%= item.isDisabled ? 'disabled-item' : '' %>" id="item-row-<%= item._id %>">
+                        <img src="<%= item.image || '/images/placeholder.jpg' %>" alt="Sneaker" class="item-img">
+                        
+                        <div class="item-details">
+                            <h3><%= item.productId ? item.productId.productName : 'Unknown Product' %></h3>
+                            <p>Color: <%= item.color || 'N/A' %></p>
+                            <p>Size: UK <%= item.size %></p>
+                            
+                            <% if (item.isDisabled) { %>
+                                <div class="error-msg"><%= item.errorMsg %></div>
+                            <% } %>
+                        </div>
+
+                        <div class="item-price">₹<%= item.price || 0 %></div>
+
+                        <div class="qty-controls">
+                            <button type="button" class="qty-btn" 
+                                onclick="updateQty('<%= item._id %>', 'decrement')"
+                                <%= item.isDisabled || item.quantity <= 1 ? 'disabled' : '' %>>-</button>
+                            
+                            <span class="qty-display" id="qty-<%= item._id %>"><%= item.quantity %></span>
+                            
+                            <button type="button" class="qty-btn" 
+                                onclick="updateQty('<%= item._id %>', 'increment')"
+                                <%= item.isDisabled || item.quantity >= 5 || item.quantity >= item.maxStock ? 'disabled' : '' %>>+</button>
+                        </div>
+
+                        <div class="item-total" id="total-<%= item._id %>">
+                            ₹<%= (item.price || 0) * item.quantity %>
+                        </div>
+
+                        <a href="/cart/remove/<%= item._id %>" class="btn-remove" title="Remove from Cart">✕</a>
+                    </div>
+                <% }) %>
+            <% } else { %>
+                <div style="text-align: center; padding: 50px; background: #1a1a24; border-radius: 12px;">
+                    <h3 style="color: #888;">Your cart is currently empty.</h3>
+                    <a href="/shop" style="color: #4dabf7; text-decoration: none; margin-top: 10px; display: inline-block;">Continue Shopping</a>
+                </div>
+            <% } %>
+        </div>
+
+        <!-- Right: Order Summary -->
+        <div class="cart-summary-section">
+            <div class="summary-card">
+                <h2>Order Summary</h2>
+                <div class="summary-row">
+                    <span>Subtotal</span>
+                    <span id="cart-subtotal">₹<%= cartTotal %></span>
+                </div>
+                <div class="summary-row">
+                    <span>Shipping</span>
+                    <span>Free</span>
+                </div>
+                <div class="summary-total">
+                    <span>Total</span>
+                    <span id="cart-total">₹<%= cartTotal %></span>
+                </div>
+
+                <% if (cart.length === 0) { %>
+                    <button class="btn-checkout disabled">Cart is Empty</button>
+                <% } else if (hasDisabledItems) { %>
+                    <button class="btn-checkout disabled">Remove Unavailable Items to Checkout</button>
+                <% } else { %>
+                    <a href="/checkout" class="btn-checkout">Proceed to Checkout</a>
+                <% } %>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        async function updateQty(itemId, action) {
+            try {
+                const response = await fetch('/cart/update-quantity', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ itemId, action })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    window.location.reload(); 
+                } else {
+                    alert(data.message);
+                }
+            } catch (error) {
+                console.error("Error updating quantity:", error);
+                alert("Something went wrong. Please try again.");
+            }
+        }
+    </script>
+</body>
+</html>

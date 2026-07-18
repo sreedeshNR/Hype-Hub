@@ -3,6 +3,7 @@ const session = require("express-session");
 const passport = require("passport");
 const cookieParser = require("cookie-parser");
 require("../config/passport");
+const flash = require("connect-flash")
 
 const setupMiddleware = (app) => {
   // Basic
@@ -27,6 +28,14 @@ const setupMiddleware = (app) => {
     saveUninitialized: false,
     cookie: { maxAge: 1000 * 60 * 60 * 24 * 2 },
   }));
+
+  app.use(flash());
+
+  app.use((req, res, next) => {
+    res.locals.success = req.flash('success');
+    res.locals.error = req.flash('error');
+    next();
+});
 
   // Passport
   app.use(passport.initialize());

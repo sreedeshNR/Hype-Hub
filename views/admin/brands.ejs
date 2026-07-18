@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Brand Management - HypeHub Admin</title>
+  <link rel="stylesheet" href="/css/admin.css"/>
+</head>
+<body>
+
+  <div class="admin-container">
+    <%- include('partials/sidebar') %>
+
+    <div class="admin-main">
+      <h2 class="page-title">Brand Management</h2>
+
+      <!-- Success/Error Messages -->
+      <% if (success) { %>
+        <div class="success-msg" id="successMsg"><%= success %></div>
+      <% } %>
+      <% if (typeof error !== "undefined" && error) { %>
+        <div class="error-msg"><%= error %></div>
+      <% } %>
+
+      <!-- Top Bar -->
+      <div class="category-topbar">
+        <form action="/admin/brands" method="GET">
+          <div class="search-bar">
+            <input
+              type="text"
+              name="search"
+              placeholder="Search by name..."
+              value="<%= search %>"
+            />
+            <button type="submit" class="btn-search">Search</button>
+            <% if (search) { %>
+              <a href="/admin/brands" class="btn-clear">✕ Clear</a>
+            <% } %>
+          </div>
+        </form>
+        <a href="/admin/brands/add" class="btn-primary">+ New Brand</a>
+      </div>
+
+      <!-- Brands Table -->
+      <div class="table-wrap">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>BRAND NAME</th>
+              <th>DESCRIPTION</th>
+              <th>STATUS</th>
+              <th>CREATED DATE</th>
+              <th>ACTIONS</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% if (brands.length === 0) { %>
+              <tr>
+                <td colspan="5" class="empty-row">No brands found.</td>
+              </tr>
+            <% } else { %>
+              <% brands.forEach(brand => { %>
+                <tr>
+                  <td>
+                    <div class="category-name-cell">
+                      <% if (brand.logo) { %>
+                        <img src="<%= brand.logo %>" alt="<%= brand.name %>" class="category-thumb"/>
+                      <% } else { %>
+                        <div class="category-thumb-placeholder"></div>
+                      <% } %>
+                      <%= brand.name %>
+                    </div>
+                  </td>
+                  <td class="description-cell">
+                    <% if (brand.description) { %>
+                      <%= brand.description.length > 40 ? brand.description.substring(0, 40) + "..." : brand.description %>
+                    <% } else { %>
+                      -
+                    <% } %>
+                  </td>
+                  <td>
+                    <span class="status-badge <%= brand.isActive ? 'active' : 'blocked' %>">
+                      <%= brand.isActive ? 'Active' : 'Inactive' %>
+                    </span>
+                  </td>
+                  <td>
+                    <%= brand.createdAt.toLocaleDateString('en-US', {
+                      day: 'numeric', month: 'short', year: 'numeric'
+                    }) %>
+                  </td>
+                  <td>
+                    <div class="action-btns">
+
+                      <!-- Edit -->
+                      <a href="/admin/brands/edit/<%= brand._id %>" class="action-btn" title="Edit">
+                        <img src="/images/icons/edit.svg" width="16" height="16" alt="Edit"/>
+                      </a>
+
+                      <!-- Toggle -->
+                      <%
+                        const toggleIcon = brand.isActive ? '⛔' : '✅';
+                        const toggleTitle = brand.isActive ? 'Deactivate' : 'Activate';
+                        const toggleMsg = `Are you sure you want to ${brand.isActive ? 'deactivate' : 'activate'} ${brand.name}?`;
+                        const toggleConfirm = brand.isActive ? 'DEACTIVATE' : 'ACTIVATE';
+                      %>
+                      <form action="/admin/brands/toggle/<%= brand._id %>" method="POST" id="toggle-<%= brand._id %>">
+                        <button type="button"
+                          class="action-btn"
+                          title="<%= toggleTitle %>"
+                          data-icon="<%= toggleIcon %>"
+                          data-title="<%= toggleTitle %> Brand"
+                          data-message="<%= toggleMsg %>"
+                          data-confirm="<%= toggleConfirm %>"
+                          data-form="toggle-<%= brand._id %>"
+                          onclick="handleToggle(this)">
+                          <img src="/images/icons/<%= brand.isActive ? 'deactivate.svg' : 'activate.svg' %>" width="16" height="16" alt="Toggle"/>
+                        </button>
+                      </form>
+
+                      <!-- Delete -->
+                      <form action="/admin/brands/delete/<%= brand._id %>" method="POST" id="delete-brand-<%= brand._id %>">
+                        <button type="button"
+                          class="action-btn delete-btn"
+                          title="Delete"
+                          data-name="<%= brand.name %>"
+                          data-form="delete-brand-<%= brand._id %>"
+                          onclick="handleDelete(this)">
+                          <img src="/images/icons/trash.svg" width="16" height="16" alt="Delete"/>
+                        </button>
+                      </form>
+
+                    </div>
+                  </td>
+                </tr>
+              <% }) %>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination -->
+      <div class="pagination-wrap">
+        <p class="pagination-info">
+          <% if (totalBrands > 0) { %>
+            Showing <%= (currentPage - 1) * limit + 1 %> - <%= Math.min(currentPage * limit, totalBrands) %> of <%= totalBrands %> brands
+          <% } else { %>
+            No brands found.
+          <% } %>
+        </p>
+
+        <% if (totalPages > 1) { %>
+          <div class="pagination">
+            <% if (currentPage > 1) { %>
+              <a href="/admin/brands?page=<%= currentPage - 1 %>&search=<%= search %>" class="page-btn">‹</a>
+            <% } %>
+            <% for (let i = 1; i <= totalPages; i++) { %>
+              <a href="/admin/brands?page=<%= i %>&search=<%= search %>"
+                class="page-btn <%= currentPage === i ? 'active' : '' %>">
+                <%= i %>
+              </a>
+            <% } %>
+            <% if (currentPage < totalPages) { %>
+              <a href="/admin/brands?page=<%= currentPage + 1 %>&search=<%= search %>" class="page-btn">›</a>
+            <% } %>
+          </div>
+        <% } %>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="/js/loader.js"></script>
+  <script src="/js/main.js"></script>
+  <script>
+    const msg = document.getElementById("successMsg");
+    if (msg) {
+      setTimeout(() => {
+        msg.style.transition = "opacity 0.5s";
+        msg.style.opacity = "0";
+        setTimeout(() => msg.remove(), 500);
+      }, 3000);
+    }
+
+    function handleToggle(btn) {
+      CustomAlert.confirm({
+        icon: btn.dataset.icon,
+        title: btn.dataset.title,
+        message: btn.dataset.message,
+        confirmText: btn.dataset.confirm,
+        cancelText: 'Cancel',
+        onConfirm: () => document.getElementById(btn.dataset.form).submit(),
+        onCancel: () => {}
+      });
+    }
+
+    function handleDelete(btn) {
+      CustomAlert.confirm({
+        icon: '🗑️',
+        title: 'Delete Brand',
+        message: `Are you sure you want to delete ${btn.dataset.name}? This cannot be undone.`,
+        confirmText: 'DELETE',
+        cancelText: 'Cancel',
+        onConfirm: () => document.getElementById(btn.dataset.form).submit(),
+        onCancel: () => {}
+      });
+    }
+  </script>
+</body>
+</html>

@@ -52,16 +52,6 @@
 </div>
 
 <div class="form-group">
-  <label>USERNAME</label>
-  <input type="text" name="username" id="userName"
-    value="<%= typeof formData !== 'undefined' ? formData.username || '' : '' %>"
-    placeholder="eg: john_doe"/>
-  <% if (typeof errors !== 'undefined' && errors.username) { %>
-    <span class="field-error"><%= errors.username %></span>
-  <% } %>
-</div>
-
-<div class="form-group">
   <label>EMAIL</label>
 <input
   type="email"
@@ -105,6 +95,27 @@
     <span class="field-error"><%= errors.password %></span>
   <% } %>
 </div>
+
+<div class="form-group">
+      <label>CONFIRM PASSWORD</label>
+      <div class="input-icon">
+        <input
+          type="password"
+          name="confirmPassword"
+          id="confirmPassword"
+          autocomplete="new-password"
+          placeholder="John@1234"/>
+        <span class="eye-icon" id="confirmPassword-icon" onclick="togglePassword('confirmPassword')" style="pointer-events:all; cursor:pointer;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="pointer-events:none;">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+          </svg>
+        </span>
+      </div>
+      <% if (typeof errors !== 'undefined' && errors.confirmPassword) { %>
+        <span class="field-error"><%= errors.confirmPassword %></span>
+      <% } %>
+    </div>
 
     <button type="submit" class="btn-primary">CREATE ACCOUNT</button>
 

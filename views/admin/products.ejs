@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Products - HypeHub Admin</title>
+  <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body>
+
+  <div class="admin-container">
+    <%- include('partials/sidebar') %>
+
+    <div class="admin-main">
+      <div class="breadcrumb">
+        <span>Products</span>
+      </div>
+
+      <!-- Top Bar: Title & Add Button -->
+      <div class="category-topbar">
+        <div>
+          <h2 class="page-title">Products Management</h2>
+          <p class="page-subtitle">Manage your sneaker inventory, variants, and pricing.</p>
+        </div>
+        <a href="/admin/products/add" class="btn-primary">+ Add New Product</a>
+      </div>
+
+      <!-- Success Message (Fires after adding a product) -->
+      <% if (typeof success !== 'undefined' && success) { %>
+        <div class="success-msg"><%= success %></div>
+      <% } %>
+
+      <!-- Search Bar -->
+      <div class="search-bar">
+        <form action="/admin/products" method="GET">
+          <input type="text" name="search" placeholder="Search by product name..." value="<%= typeof search !== 'undefined' ? search : '' %>">
+          <button type="submit" class="btn-search">Search</button>
+          <% if (typeof search !== 'undefined' && search) { %>
+            <a href="/admin/products" class="btn-clear">Clear</a>
+          <% } %>
+        </form>
+      </div>
+
+      <!-- Products Table -->
+      <div class="table-wrap">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>PRODUCT</th>
+              <th>CATEGORY</th>
+              <th>BRAND</th>
+              <th>PRICE</th>
+              <th>STATUS</th>
+              <th>ACTIONS</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% if (products && products.length > 0) { %>
+              <% products.forEach(prod => { %>
+                <tr>
+                  
+                  <!-- Product Image & Name -->
+                  <td>
+                    <div class="category-name-cell">
+                      <% if (prod.image) { %>
+                        <img src="<%= prod.image %>" alt="<%= prod.productName %>" class="category-thumb">
+                      <% } else { %>
+                        <div class="category-thumb-placeholder"></div>
+                      <% } %>
+                      <div>
+                        <strong style="color: #fff;"><%= prod.productName %></strong><br>
+                        <span style="font-size: 11px; color: #777;"><%= prod.gender %></span>
+                      </div>
+                    </div>
+                  </td>
+
+                  <!-- Category -->
+                  <td><%= prod.categoryId ? prod.categoryId.name : 'N/A' %></td>
+                  
+                  <!-- Brand -->
+                  <td><%= prod.brandId ? prod.brandId.name : 'N/A' %></td>
+                  
+                  <!-- Price -->
+                  <td>
+                    <% if (prod.salePrice < prod.regularPrice) { %>
+                      <span style="color: #ff6b35; font-weight: bold;">₹<%= prod.salePrice %></span>
+                      <br>
+                      <span style="text-decoration: line-through; font-size: 11px; color: #777;">₹<%= prod.regularPrice %></span>
+                    <% } else { %>
+                      <span style="font-weight: bold; color: #fff;">₹<%= prod.regularPrice %></span>
+                    <% } %>
+                  </td>
+
+                  <!-- Status Badge -->
+                  <td>
+                    <% if (prod.isListed) { %>
+                      <span class="status-badge active">Listed</span>
+                    <% } else { %>
+                      <span class="status-badge blocked">Unlisted</span>
+                    <% } %>
+                  </td>
+
+                  <!-- Action Buttons -->
+                  <td>
+                    <div class="action-btns">
+                      <!-- Edit Button -->
+                      <a href="/admin/products/edit/<%= prod._id %>" class="action-btn" title="Edit Product">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" stroke="#aaaaaa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                          <path d="M12 20h9"></path>
+                          <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                        </svg>
+                      </a>
+                      
+                      <!-- Toggle Status Button -->
+                      <% if (prod.isListed) { %>
+                        <button class="btn-block" title="Unlist Product" onclick="confirmUnlist('<%= prod._id %>')">Unlist</button>
+                      <% } else { %>
+                        <button class="btn-unblock" title="List Product" onclick="confirmList('<%= prod._id %>')">List</button>
+                      <% } %>
+
+                      <!-- Delete Button -->
+                        <button class="action-btn delete-btn" title="Delete Product" onclick="confirmDelete('<%= prod._id %>')">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" stroke="#ff4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                            <polyline points="3 6 5 6 21 6"></polyline>
+                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                        </svg>
+                        </button>
+                    </div>
+                  </td>
+
+                </tr>
+              <% }) %>
+            <% } else { %>
+              <tr>
+                <td colspan="6" class="empty-row">No products found. Time to add your first sneaker!</td>
+              </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination -->
+      <% if (totalPages > 1) { %>
+        <div class="pagination-wrap">
+          <div class="pagination-info">
+            Showing page <%= currentPage %> of <%= totalPages %>
+          </div>
+          <div class="pagination">
+            <% for (let i = 1; i <= totalPages; i++) { %>
+              <a href="/admin/products?page=<%= i %><%= search ? '&search=' + search : '' %>" 
+                 class="page-btn <%= currentPage === i ? 'active' : '' %>">
+                <%= i %>
+              </a>
+            <% } %>
+          </div>
+        </div>
+      <% } %>
+
+    </div>
+  </div>
+
+  <script src="/js/loader.js"></script>
+  <script src="/js/main.js"></script>
+  
+  <script>
+    // Placeholder functions for the List/Unlist logic (Update Phase)
+    function confirmUnlist(productId) {
+      CustomAlert.confirm({
+        title: "Unlist Product",
+        message: "Are you sure you want to hide this product from the store?",
+        confirmText: "Yes, Unlist",
+        onConfirm: () => {
+          // We will write the backend route for this next!
+          window.location.href = `/admin/products/toggle-status/${productId}`;
+        }
+      });
+    }
+
+    function confirmList(productId) {
+      CustomAlert.confirm({
+        title: "List Product",
+        message: "Are you sure you want to make this product visible to customers?",
+        confirmText: "Yes, List",
+        onConfirm: () => {
+          // We will write the backend route for this next!
+          window.location.href = `/admin/products/toggle-status/${productId}`;
+        }
+      });
+    }
+
+
+    function confirmDelete(productId) {
+      CustomAlert.confirm({
+        title: "Delete Product",
+        message: "Are you sure you want to delete this product? This action cannot be undone.",
+        confirmText: "Yes, Delete",
+        onConfirm: () => {
+          window.location.href = `/admin/products/delete/${productId}`;
+        }
+      });
+    }
+  </script>
+</body>
+</html>

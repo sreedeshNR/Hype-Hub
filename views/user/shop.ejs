@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/landing.css">
+    <link rel="stylesheet" href="/css/shop.css">
+</head>
+<body>
+
+    <%- include('../../views/user/partials/navbar.ejs') %>    
+    <div class="shop-container">
+        <!-- Task A.v: Combined form ensures search + sort + filter all submit together -->
+        <form action="/shop" method="GET" id="shopForm" style="display: contents;">
+            
+            <!-- SIDEBAR FILTERS -->
+            <aside class="sidebar">
+                <div class="filter-group">
+                    <h4>Category</h4>
+                    <!-- Submitting form on change allows instant filtering -->
+                    <select name="category" onchange="document.getElementById('shopForm').submit()">
+                        <option value="">All Categories</option>
+                        <% categories.forEach(cat => { %>
+                            <option value="<%= cat._id %>" <%= queryParams.category === cat._id.toString() ? 'selected' : '' %>><%= cat.name %></option>
+                        <% }) %>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <h4>Brand</h4>
+                    <select name="brand" onchange="document.getElementById('shopForm').submit()">
+                        <option value="">All Brands</option>
+                        <% brands.forEach(brand => { %>
+                            <option value="<%= brand._id %>" <%= queryParams.brand === brand._id.toString() ? 'selected' : '' %>><%= brand.name %></option>
+                        <% }) %>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <h4>Price Range (₹)</h4>
+                    <input type="number" name="minPrice" placeholder="Min Price" value="<%= queryParams.minPrice || '' %>">
+                    <input type="number" name="maxPrice" placeholder="Max Price" value="<%= queryParams.maxPrice || '' %>">
+                </div>
+
+                <button type="submit" class="btn-filter">Apply Filters</button>
+                <a href="/shop" class="btn-clear">Clear All Filters</a>
+            </aside>
+
+            <!-- MAIN CONTENT -->
+            <main class="main-content">
+                
+                <!-- TOP BAR: Search & Sort -->
+                <div class="top-bar">
+                    <div style="color: #aaa;">Showing <%= products.length %> of <%= totalProducts %> results</div>
+                    
+                    <div class="search-box">
+                        <input type="text" name="search" placeholder="Search sneakers..." value="<%= queryParams.search || '' %>">
+                        
+                        <!-- Task A.i: Cancel/Clear Search Button -->
+                        <% if(queryParams.search && queryParams.search.trim() !== '') { %>
+                            <button type="button" class="search-cancel" onclick="clearSearch()" title="Clear search">✕</button>
+                        <% } %>
+                        <button type="submit" class="search-btn">Search</button>
+                    </div>
+
+                    <!-- Task A.iii: Sorting Options -->
+                    <div class="sort-box">
+                        <select name="sort" onchange="document.getElementById('shopForm').submit()">
+                            <option value="newest" <%= queryParams.sort === 'newest' ? 'selected' : '' %>>Newest Arrivals</option>
+                            <option value="price-low" <%= queryParams.sort === 'price-low' ? 'selected' : '' %>>Price: Low to High</option>
+                            <option value="price-high" <%= queryParams.sort === 'price-high' ? 'selected' : '' %>>Price: High to Low</option>
+                            <option value="a-z" <%= queryParams.sort === 'a-z' ? 'selected' : '' %>>Name: A to Z</option>
+                            <option value="z-a" <%= queryParams.sort === 'z-a' ? 'selected' : '' %>>Name: Z to A</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- PRODUCT GRID -->
+                <div class="product-grid">
+                    <% if (products.length > 0) { %>
+                        <% products.forEach(product => { %>
+                            <a href="/product/<%= product.slug %>" class="product-card">
+                                <img src="<%= product.image %>" alt="<%= product.productName %>">
+                                <div class="product-info">
+                                    <h3><%= product.productName %></h3>
+                                    <div class="price-row">
+                                        <span class="price">₹<%= product.price %></span>
+                                        <% if (product.regularPrice > product.price) { %>
+                                            <span class="regular-price">₹<%= product.regularPrice %></span>
+                                        <% } %>
+                                    </div>
+                                </div>
+                            </a>
+                        <% }) %>
+                    <% } else { %>
+                        <div style="grid-column: 1 / -1; text-align: center; padding: 60px; background: #1a1a24; border-radius: 12px;">
+                            <h3 style="color: #888; font-weight: normal;">No products match your current filters.</h3>
+                            <button type="button" onclick="window.location.href='/shop'" class="btn-filter" style="width: auto; padding: 10px 20px; margin-top: 15px;">Clear Filters</button>
+                        </div>
+                    <% } %>
+                </div>
+
+                <!-- PAGINATION (Task A.ii) -->
+                <% if (totalPages > 1) { %>
+                    <div class="pagination">
+                        <% for (let i = 1; i <= totalPages; i++) { %>
+                            <!-- Submitting via form button preserves all active search/sort/filters -->
+                            <button type="submit" name="page" value="<%= i %>" class="page-btn <%= currentPage === i ? 'active' : '' %>">
+                                <%= i %>
+                            </button>
+                        <% } %>
+                    </div>
+                <% } %>
+            </main>
+        </form>
+    </div>
+
+    <script>
+        // JS logic for the Search Cancel Button
+        function clearSearch() {
+            const searchInput = document.querySelector('input[name="search"]');
+            if (searchInput) {
+                searchInput.value = ''; // Empty the input
+                document.getElementById('shopForm').submit(); // Submit the form to refresh results
+            }
+        }
+    </script>
+</body>
+</html>
